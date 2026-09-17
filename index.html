@@ -1,0 +1,4122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>ARTFORGE — Image Artwork Studio</title>
+
+<meta name="description"
+content="Professional browser-based image artwork editor with gradients, text, patterns, textures and export tools.">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap');
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --bg:#070707;
+    --panel:#101010;
+    --panel2:#151515;
+    --panel3:#1b1b1b;
+    --border:rgba(255,255,255,.09);
+    --border2:rgba(255,255,255,.15);
+    --text:#f5f5f5;
+    --muted:#888;
+    --accent:#c1121f;
+    --accent2:#ff3545;
+    --green:#40d98a;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    min-height:100vh;
+    background:
+        radial-gradient(
+            circle at 10% 0%,
+            rgba(193,18,31,.12),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 90% 100%,
+            rgba(193,18,31,.08),
+            transparent 30%
+        ),
+        #070707;
+    color:var(--text);
+    font-family:Inter,Arial,sans-serif;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header{
+    height:76px;
+    padding:0 30px;
+    border-bottom:1px solid var(--border);
+    background:rgba(7,7,7,.86);
+    backdrop-filter:blur(22px);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.logo{
+    font-size:20px;
+    font-weight:800;
+    letter-spacing:-.8px;
+}
+
+.logo span{
+    color:var(--accent2);
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.badge{
+    border:1px solid var(--border);
+    color:#999;
+    font-size:10px;
+    letter-spacing:1.6px;
+    padding:8px 12px;
+    border-radius:30px;
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+main{
+    width:min(1550px,95%);
+    margin:auto;
+    padding:42px 0 70px;
+}
+
+.hero{
+    text-align:center;
+    max-width:850px;
+    margin:0 auto 38px;
+}
+
+.eyebrow{
+    color:var(--accent2);
+    font-size:10px;
+    letter-spacing:3px;
+    font-weight:800;
+    margin-bottom:13px;
+}
+
+.hero h1{
+    font-family:"Playfair Display",serif;
+    font-size:clamp(42px,6vw,76px);
+    line-height:1;
+    letter-spacing:-3px;
+}
+
+.hero p{
+    max-width:650px;
+    margin:17px auto 0;
+    color:#818181;
+    line-height:1.7;
+    font-size:14px;
+}
+
+/* =========================================================
+   APP
+========================================================= */
+
+.editor{
+    display:grid;
+    grid-template-columns:350px minmax(0,1fr) 320px;
+    gap:16px;
+    align-items:start;
+}
+
+/* =========================================================
+   PANELS
+========================================================= */
+
+.panel{
+    background:rgba(15,15,15,.9);
+    border:1px solid var(--border);
+    border-radius:22px;
+    overflow:hidden;
+}
+
+.panel-inner{
+    padding:18px;
+}
+
+.panel-title{
+    padding:17px 18px;
+    border-bottom:1px solid var(--border);
+    font-size:11px;
+    letter-spacing:1.7px;
+    text-transform:uppercase;
+    color:#aaa;
+    font-weight:800;
+}
+
+.left-panel,
+.right-panel{
+    position:sticky;
+    top:94px;
+    max-height:calc(100vh - 112px);
+    overflow:auto;
+}
+
+.left-panel::-webkit-scrollbar,
+.right-panel::-webkit-scrollbar{
+    width:5px;
+}
+
+.left-panel::-webkit-scrollbar-thumb,
+.right-panel::-webkit-scrollbar-thumb{
+    background:#292929;
+    border-radius:20px;
+}
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.section{
+    padding-bottom:22px;
+    margin-bottom:20px;
+    border-bottom:1px solid var(--border);
+}
+
+.section:last-child{
+    border-bottom:0;
+    margin-bottom:0;
+    padding-bottom:0;
+}
+
+.section-heading{
+    font-size:10px;
+    color:#777;
+    letter-spacing:1.6px;
+    text-transform:uppercase;
+    font-weight:800;
+    margin-bottom:12px;
+}
+
+.control{
+    margin-bottom:13px;
+}
+
+.control:last-child{
+    margin-bottom:0;
+}
+
+.label{
+    display:block;
+    color:#aaa;
+    font-size:11px;
+    margin-bottom:7px;
+}
+
+select,
+input[type=text],
+input[type=number]{
+    width:100%;
+    height:40px;
+    background:#181818;
+    border:1px solid var(--border);
+    color:#eee;
+    border-radius:10px;
+    padding:0 11px;
+    outline:none;
+}
+
+select:focus,
+input[type=text]:focus,
+input[type=number]:focus{
+    border-color:rgba(255,53,69,.55);
+}
+
+/* =========================================================
+   UPLOAD
+========================================================= */
+
+.upload{
+    border:1px dashed #393939;
+    border-radius:17px;
+    padding:23px 15px;
+    text-align:center;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.upload:hover,
+.upload.dragging{
+    border-color:var(--accent2);
+    background:rgba(193,18,31,.06);
+}
+
+.upload-icon{
+    width:48px;
+    height:48px;
+    border-radius:15px;
+    background:#191919;
+    display:grid;
+    place-items:center;
+    margin:0 auto 11px;
+    font-size:22px;
+}
+
+.upload strong{
+    display:block;
+    font-size:13px;
+}
+
+.upload small{
+    display:block;
+    color:#666;
+    font-size:10px;
+    margin-top:6px;
+}
+
+input[type=file]{
+    display:none;
+}
+
+/* =========================================================
+   RANGE
+========================================================= */
+
+.range-row{
+    display:flex;
+    align-items:center;
+    gap:9px;
+}
+
+input[type=range]{
+    flex:1;
+    accent-color:var(--accent2);
+}
+
+.range-value{
+    width:45px;
+    text-align:right;
+    color:#aaa;
+    font-size:10px;
+}
+
+/* =========================================================
+   COLOR
+========================================================= */
+
+.color-list{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.color-row{
+    display:flex;
+    gap:7px;
+}
+
+.color-picker{
+    width:43px;
+    height:40px;
+    padding:3px;
+    border-radius:9px;
+    border:1px solid var(--border);
+    background:#191919;
+}
+
+.color-hex{
+    flex:1;
+}
+
+.icon-btn{
+    width:40px;
+    height:40px;
+    background:#191919;
+    color:#888;
+    border:1px solid var(--border);
+    border-radius:9px;
+    cursor:pointer;
+}
+
+.icon-btn:hover{
+    color:#fff;
+}
+
+.add-btn{
+    width:100%;
+    height:39px;
+    margin-top:8px;
+    background:transparent;
+    border:1px dashed #3b3b3b;
+    color:#999;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.add-btn:hover{
+    color:#fff;
+    border-color:#666;
+}
+
+/* =========================================================
+   PRESETS
+========================================================= */
+
+.preset-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:7px;
+}
+
+.preset{
+    height:38px;
+    border-radius:9px;
+    border:2px solid transparent;
+    cursor:pointer;
+}
+
+.preset:hover{
+    transform:translateY(-1px);
+}
+
+.preset.active{
+    border-color:#fff;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.button{
+    height:42px;
+    padding:0 14px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:#191919;
+    color:#eee;
+    cursor:pointer;
+    font-weight:600;
+    font-size:11px;
+    transition:.2s;
+}
+
+.button:hover{
+    background:#232323;
+}
+
+.button.primary{
+    background:var(--accent);
+    border-color:var(--accent);
+}
+
+.button.primary:hover{
+    background:#e12231;
+}
+
+.button.light{
+    background:#f5f5f5;
+    color:#090909;
+    border-color:#fff;
+}
+
+.full{
+    width:100%;
+}
+
+.two{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
+
+/* =========================================================
+   TEXT LAYERS
+========================================================= */
+
+.text-add{
+    display:grid;
+    grid-template-columns:1fr 48px;
+    gap:7px;
+}
+
+.text-add button{
+    width:48px;
+}
+
+.layers{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    margin-top:10px;
+}
+
+.layer{
+    min-height:43px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:#181818;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:7px 8px;
+    cursor:pointer;
+}
+
+.layer.active{
+    border-color:rgba(255,53,69,.65);
+    background:#1d1213;
+}
+
+.layer-name{
+    flex:1;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    font-size:11px;
+}
+
+.layer-delete{
+    width:28px;
+    height:28px;
+    border:0;
+    background:transparent;
+    color:#777;
+    cursor:pointer;
+}
+
+.layer-delete:hover{
+    color:#fff;
+}
+
+/* =========================================================
+   TEXT COLOR
+========================================================= */
+
+.text-color-row{
+    display:flex;
+    gap:8px;
+}
+
+.text-color{
+    width:46px;
+    height:40px;
+    padding:3px;
+    border-radius:9px;
+    border:1px solid var(--border);
+    background:#181818;
+}
+
+/* =========================================================
+   PATTERN PREVIEW
+========================================================= */
+
+.pattern-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:7px;
+}
+
+.pattern-option{
+    height:42px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    cursor:pointer;
+    background-color:#222;
+    position:relative;
+    overflow:hidden;
+}
+
+.pattern-option.active{
+    border:2px solid #fff;
+}
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+.workspace{
+    min-width:0;
+}
+
+.canvas-panel{
+    min-height:730px;
+    padding:17px;
+    background:rgba(15,15,15,.9);
+    border:1px solid var(--border);
+    border-radius:22px;
+    display:flex;
+    flex-direction:column;
+}
+
+.canvas-toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:12px;
+}
+
+.image-info{
+    min-width:0;
+    color:#777;
+    font-size:10px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.format-buttons{
+    display:flex;
+    gap:5px;
+}
+
+.format{
+    border:1px solid var(--border);
+    background:#181818;
+    color:#999;
+    padding:8px 11px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:10px;
+    font-weight:700;
+}
+
+.format.active{
+    background:#fff;
+    color:#111;
+}
+
+.canvas-wrap{
+    flex:1;
+    min-height:590px;
+    border-radius:16px;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+
+    background-color:#101010;
+
+    background-image:
+        linear-gradient(45deg,#191919 25%,transparent 25%),
+        linear-gradient(-45deg,#191919 25%,transparent 25%),
+        linear-gradient(45deg,transparent 75%,#191919 75%),
+        linear-gradient(-45deg,transparent 75%,#191919 75%);
+
+    background-size:24px 24px;
+    background-position:
+        0 0,
+        0 12px,
+        12px -12px,
+        -12px 0;
+}
+
+#canvas{
+    max-width:100%;
+    max-height:680px;
+    width:auto;
+    height:auto;
+    display:block;
+    box-shadow:0 30px 80px rgba(0,0,0,.55);
+}
+
+.empty{
+    position:absolute;
+    text-align:center;
+    color:#555;
+    pointer-events:none;
+}
+
+.empty-icon{
+    font-size:46px;
+    margin-bottom:8px;
+}
+
+.empty h2{
+    color:#aaa;
+    font-size:15px;
+}
+
+.empty p{
+    font-size:11px;
+    margin-top:6px;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status{
+    margin-top:12px;
+    padding-top:12px;
+    border-top:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    color:#666;
+    font-size:10px;
+}
+
+.dot{
+    display:inline-block;
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#555;
+    margin-right:6px;
+}
+
+.ready .dot{
+    background:var(--green);
+}
+
+/* =========================================================
+   EXPORT
+========================================================= */
+
+.export-name{
+    display:flex;
+    gap:7px;
+}
+
+.export-name input{
+    flex:1;
+}
+
+.extension{
+    width:70px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#191919;
+    border:1px solid var(--border);
+    border-radius:10px;
+    color:#777;
+    font-size:10px;
+}
+
+/* =========================================================
+   MOBILE TOOLBAR
+========================================================= */
+
+.mobile-export{
+    display:none;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:1250px){
+
+    .editor{
+        grid-template-columns:310px minmax(0,1fr);
+    }
+
+    .right-panel{
+        grid-column:1 / -1;
+        position:static;
+        max-height:none;
+    }
+
+    .right-panel .panel-inner{
+        display:grid;
+        grid-template-columns:repeat(2,1fr);
+        gap:20px;
+    }
+
+}
+
+@media(max-width:850px){
+
+    main{
+        padding-top:30px;
+    }
+
+    .editor{
+        display:block;
+    }
+
+    .left-panel,
+    .right-panel{
+        position:static;
+        max-height:none;
+        margin-bottom:14px;
+    }
+
+    .canvas-panel{
+        min-height:550px;
+    }
+
+    .canvas-wrap{
+        min-height:440px;
+    }
+
+    .right-panel .panel-inner{
+        display:block;
+    }
+
+}
+
+@media(max-width:600px){
+
+    header{
+        height:64px;
+        padding:0 15px;
+    }
+
+    .logo{
+        font-size:17px;
+    }
+
+    .badge{
+        display:none;
+    }
+
+    main{
+        width:94%;
+        padding-bottom:35px;
+    }
+
+    .hero{
+        margin-bottom:25px;
+    }
+
+    .hero h1{
+        font-size:42px;
+        letter-spacing:-2px;
+    }
+
+    .hero p{
+        font-size:12px;
+    }
+
+    .panel,
+    .canvas-panel{
+        border-radius:17px;
+    }
+
+    .panel-inner{
+        padding:14px;
+    }
+
+    .canvas-panel{
+        padding:12px;
+    }
+
+    .canvas-toolbar{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .format-buttons{
+        width:100%;
+    }
+
+    .format{
+        flex:1;
+    }
+
+    .canvas-wrap{
+        min-height:360px;
+    }
+
+    #canvas{
+        max-height:500px;
+    }
+
+    .status{
+        flex-direction:column;
+        gap:6px;
+    }
+
+    .two{
+        grid-template-columns:1fr;
+    }
+
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media(max-width:380px){
+
+    .hero h1{
+        font-size:36px;
+    }
+
+    .preset-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        ART<span>FORGE</span>
+    </div>
+
+    <div class="header-right">
+        <div class="badge">
+            BROWSER ART STUDIO
+        </div>
+    </div>
+
+</header>
+
+
+<main>
+
+<section class="hero">
+
+    <div class="eyebrow">
+        PROFESSIONAL IMAGE ARTWORK EDITOR
+    </div>
+
+    <h1>
+        Create Your Artwork.
+    </h1>
+
+    <p>
+        Add gradients, typography, patterns and textures to your image.
+        Build your artwork directly in your browser and export the final design.
+    </p>
+
+</section>
+
+
+<div class="editor">
+
+
+<!-- ======================================================
+     LEFT PANEL
+====================================================== -->
+
+<aside class="panel left-panel">
+
+    <div class="panel-title">
+        Artwork Controls
+    </div>
+
+    <div class="panel-inner">
+
+
+        <!-- IMAGE -->
+
+        <div class="section">
+
+            <div class="section-heading">
+                01 — Image
+            </div>
+
+            <label class="upload" id="uploadBox">
+
+                <div class="upload-icon">
+                    ＋
+                </div>
+
+                <strong>
+                    Upload Artwork
+                </strong>
+
+                <small>
+                    JPG · PNG · WebP
+                </small>
+
+                <input
+                    type="file"
+                    id="fileInput"
+                    accept="image/jpeg,image/png,image/webp"
+                >
+
+            </label>
+
+        </div>
+
+
+        <!-- GRADIENT -->
+
+        <div class="section">
+
+            <div class="section-heading">
+                02 — Gradient
+            </div>
+
+            <div class="control">
+
+                <label class="label">
+                    Gradient Type
+                </label>
+
+                <select id="gradientType">
+
+                    <option value="linear">
+                        Linear
+                    </option>
+
+                    <option value="radial">
+                        Radial
+                    </option>
+
+                    <option value="conic">
+                        Conic
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="control">
+
+                <label class="label">
+                    Colors
+                </label>
+
+                <div class="color-list" id="colorList"></div>
+
+                <button
+                    class="add-btn"
+                    id="addColor">
+                    + Add Color
+                </button>
+
+            </div>
+
+
+            <div class="control">
+
+                <label class="label">
+                    Angle
+                </label>
+
+                <div class="range-row">
+
+                    <input
+                        type="range"
+                        id="angle"
+                        min="0"
+                        max="360"
+                        value="135">
+
+                    <span
+                        class="range-value"
+                        id="angleValue">
+                        135°
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="control">
+
+                <label class="label">
+                    Opacity
+                </label>
+
+                <div class="range-row">
+
+                    <input
+                        type="range"
+                        id="gradientOpacity"
+                        min="0"
+                        max="100"
+                        value="70">
+
+                    <span
+                        class="range-value"
+                        id="gradientOpacityValue">
+                        70%
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="control">
+
+                <label class="label">
+                    Blend Mode
+                </label>
+
+                <select id="gradientBlend">
+
+                    <option value="source-over">
+                        Normal
+                    </option>
+
+                    <option value="multiply">
+                        Multiply
+                    </option>
+
+                    <option value="screen">
+                        Screen
+                    </option>
+
+                    <option value="overlay">
+                        Overlay
+                    </option>
+
+                    <option value="soft-light">
+                        Soft Light
+                    </option>
+
+                    <option value="hard-light">
+                        Hard Light
+                    </option>
+
+                    <option value="color-dodge">
+                        Color Dodge
+                    </option>
+
+                    <option value="color-burn">
+                        Color Burn
+                    </option>
+
+                    <option value="difference">
+                        Difference
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="preset-grid">
+
+                <button
+                    class="preset"
+                    data-colors="#ff0055,#7b00ff"
+                    style="background:linear-gradient(135deg,#ff0055,#7b00ff)">
+                </button>
+
+                <button
+                    class="preset"
+                    data-colors="#00c6ff,#0072ff"
+                    style="background:linear-gradient(135deg,#00c6ff,#0072ff)">
+                </button>
+
+                <button
+                    class="preset"
+                    data-colors="#f7971e,#ffd200"
+                    style="background:linear-gradient(135deg,#f7971e,#ffd200)">
+                </button>
+
+                <button
+                    class="preset"
+                    data-colors="#00f260,#0575e6"
+                    style="background:linear-gradient(135deg,#00f260,#0575e6)">
+                </button>
+
+                <button
+                    class="preset"
+                    data-colors="#ff512f,#dd2476"
+                    style="background:linear-gradient(135deg,#ff512f,#dd2476)">
+                </button>
+
+                <button
+                    class="preset"
+                    data-colors="#833ab4,#fd1d1d,#fcb045"
+                    style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)">
+                </button>
+
+                <button
+                    class="preset"
+                    data-colors="#141e30,#243b55"
+                    style="background:linear-gradient(135deg,#141e30,#243b55)">
+                </button>
+
+                <button
+                    class="preset"
+                    data-colors="#000000,#c1121f"
+                    style="background:linear-gradient(135deg,#000,#c1121f)">
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- TEXT -->
+
+        <div class="section">
+
+            <div class="section-heading">
+                03 — Typography
+            </div>
+
+            <div class="text-add">
+
+                <input
+                    type="text"
+                    id="textInput"
+                    placeholder="Write your text...">
+
+                <button
+                    class="button primary"
+                    id="addText">
+                    +
+                </button>
+
+            </div>
+
+
+            <div
+                class="layers"
+                id="textLayers">
+            </div>
+
+
+            <div
+                id="textControls"
+                style="display:none;margin-top:13px;">
+
+
+                <div class="control">
+
+                    <label class="label">
+                        Font
+                    </label>
+
+                    <select id="fontFamily">
+
+                        <option value="Inter">
+                            Inter
+                        </option>
+
+                        <option value="Arial">
+                            Arial
+                        </option>
+
+                        <option value="Helvetica">
+                            Helvetica
+                        </option>
+
+                        <option value="Georgia">
+                            Georgia
+                        </option>
+
+                        <option value="Times New Roman">
+                            Times New Roman
+                        </option>
+
+                        <option value="Courier New">
+                            Courier New
+                        </option>
+
+                        <option value="Impact">
+                            Impact
+                        </option>
+
+                        <option value="Trebuchet MS">
+                            Trebuchet MS
+                        </option>
+
+                        <option value="Verdana">
+                            Verdana
+                        </option>
+
+                        <option value="Playfair Display">
+                            Playfair Display
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="control">
+
+                    <label class="label">
+                        Size
+                    </label>
+
+                    <div class="range-row">
+
+                        <input
+                            type="range"
+                            id="fontSize"
+                            min="10"
+                            max="500"
+                            value="90">
+
+                        <span
+                            class="range-value"
+                            id="fontSizeValue">
+                            90
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="control">
+
+                    <label class="label">
+                        Horizontal Position
+                    </label>
+
+                    <div class="range-row">
+
+                        <input
+                            type="range"
+                            id="textX"
+                            min="0"
+                            max="100"
+                            value="50">
+
+                        <span
+                            class="range-value"
+                            id="textXValue">
+                            50%
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="control">
+
+                    <label class="label">
+                        Vertical Position
+                    </label>
+
+                    <div class="range-row">
+
+                        <input
+                            type="range"
+                            id="textY"
+                            min="0"
+                            max="100"
+                            value="50">
+
+                        <span
+                            class="range-value"
+                            id="textYValue">
+                            50%
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="control">
+
+                    <label class="label">
+                        Letter Spacing
+                    </label>
+
+                    <div class="range-row">
+
+                        <input
+                            type="range"
+                            id="letterSpacing"
+                            min="-20"
+                            max="50"
+                            value="0">
+
+                        <span
+                            class="range-value"
+                            id="letterSpacingValue">
+                            0
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="control">
+
+                    <label class="label">
+                        Text Opacity
+                    </label>
+
+                    <div class="range-row">
+
+                        <input
+                            type="range"
+                            id="textOpacity"
+                            min="0"
+                            max="100"
+                            value="100">
+
+                        <span
+                            class="range-value"
+                            id="textOpacityValue">
+                            100%
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="control">
+
+                    <label class="label">
+                        Text Color
+                    </label>
+
+                    <div class="text-color-row">
+
+                        <input
+                            type="color"
+                            class="text-color"
+                            id="textColor"
+                            value="#ffffff">
+
+                        <input
+                            type="text"
+                            id="textHex"
+                            value="#ffffff">
+
+                    </div>
+
+                </div>
+
+
+                <div class="control">
+
+                    <label class="label">
+                        Shadow
+                    </label>
+
+                    <div class="range-row">
+
+                        <input
+                            type="range"
+                            id="textShadow"
+                            min="0"
+                            max="50"
+                            value="0">
+
+                        <span
+                            class="range-value"
+                            id="textShadowValue">
+                            0
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="control">
+
+                    <label class="label">
+                        Stroke
+                    </label>
+
+                    <div class="range-row">
+
+                        <input
+                            type="range"
+                            id="textStroke"
+                            min="0"
+                            max="20"
+                            value="0">
+
+                        <span
+                            class="range-value"
+                            id="textStrokeValue">
+                            0
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="button full"
+                    id="deleteText">
+                    Delete Selected Text
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- PATTERN -->
+
+        <div class="section">
+
+            <div class="section-heading">
+                04 — Pattern
+            </div>
+
+            <div class="pattern-grid">
+
+                <button
+                    class="pattern-option active"
+                    data-pattern="none"
+                    style="background:#202020">
+                </button>
+
+                <button
+                    class="pattern-option"
+                    data-pattern="dots"
+                    style="background-image:radial-gradient(#aaa 1px,transparent 1px);background-size:10px 10px">
+                </button>
+
+                <button
+                    class="pattern-option"
+                    data-pattern="grid"
+                    style="background-image:linear-gradient(#777 1px,transparent 1px),linear-gradient(90deg,#777 1px,transparent 1px);background-size:12px 12px">
+                </button>
+
+                <button
+                    class="pattern-option"
+                    data-pattern="diagonal"
+                    style="background-image:repeating-linear-gradient(45deg,#777 0 1px,transparent 1px 8px)">
+                </button>
+
+                <button
+                    class="pattern-option"
+                    data-pattern="cross"
+                    style="background-image:linear-gradient(#777 1px,transparent 1px),linear-gradient(90deg,#777 1px,transparent 1px);background-size:18px 18px">
+                </button>
+
+                <button
+                    class="pattern-option"
+                    data-pattern="diamond"
+                    style="background-image:linear-gradient(45deg,transparent 48%,#777 49%,#777 51%,transparent 52%),linear-gradient(-45deg,transparent 48%,#777 49%,#777 51%,transparent 52%);background-size:18px 18px">
+                </button>
+
+            </div>
+
+
+            <div
+                id="patternControls"
+                style="display:none;margin-top:13px;">
+
+                <div class="control">
+
+                    <label class="label">
+                        Pattern Opacity
+                    </label>
+
+                    <div class="range-row">
+
+                        <input
+                            type="range"
+                            id="patternOpacity"
+                            min="0"
+                            max="100"
+                            value="25">
+
+                        <span
+                            class="range-value"
+                            id="patternOpacityValue">
+                            25%
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="control">
+
+                    <label class="label">
+                        Pattern Size
+                    </label>
+
+                    <div class="range-row">
+
+                        <input
+                            type="range"
+                            id="patternSize"
+                            min="5"
+                            max="100"
+                            value="24">
+
+                        <span
+                            class="range-value"
+                            id="patternSizeValue">
+                            24
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="control">
+
+                    <label class="label">
+                        Pattern Color
+                    </label>
+
+                    <input
+                        type="color"
+                        id="patternColor"
+                        value="#ffffff"
+                        class="text-color">
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TEXTURE -->
+
+        <div class="section">
+
+            <div class="section-heading">
+                05 — Texture
+            </div>
+
+            <select id="textureType">
+
+                <option value="none">
+                    No Texture
+                </option>
+
+                <option value="grain">
+                    Film Grain
+                </option>
+
+                <option value="noise">
+                    Noise
+                </option>
+
+                <option value="paper">
+                    Paper
+                </option>
+
+                <option value="dust">
+                    Dust
+                </option>
+
+                <option value="scanlines">
+                    Scanlines
+                </option>
+
+                <option value="soft">
+                    Soft Grain
+                </option>
+
+            </select>
+
+
+            <div
+                id="textureControls"
+                style="display:none;margin-top:13px;">
+
+                <div class="control">
+
+                    <label class="label">
+                        Texture Intensity
+                    </label>
+
+                    <div class="range-row">
+
+                        <input
+                            type="range"
+                            id="textureIntensity"
+                            min="0"
+                            max="100"
+                            value="20">
+
+                        <span
+                            class="range-value"
+                            id="textureIntensityValue">
+                            20%
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- IMAGE ADJUSTMENTS -->
+
+        <div class="section">
+
+            <div class="section-heading">
+                06 — Image Adjustments
+            </div>
+
+
+            <div class="control">
+
+                <label class="label">
+                    Brightness
+                </label>
+
+                <div class="range-row">
+
+                    <input
+                        type="range"
+                        id="brightness"
+                        min="-100"
+                        max="100"
+                        value="0">
+
+                    <span
+                        class="range-value"
+                        id="brightnessValue">
+                        0
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="control">
+
+                <label class="label">
+                    Contrast
+                </label>
+
+                <div class="range-row">
+
+                    <input
+                        type="range"
+                        id="contrast"
+                        min="-100"
+                        max="100"
+                        value="0">
+
+                    <span
+                        class="range-value"
+                        id="contrastValue">
+                        0
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="control">
+
+                <label class="label">
+                    Saturation
+                </label>
+
+                <div class="range-row">
+
+                    <input
+                        type="range"
+                        id="saturation"
+                        min="-100"
+                        max="100"
+                        value="0">
+
+                    <span
+                        class="range-value"
+                        id="saturationValue">
+                        0
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="control">
+
+                <label class="label">
+                    Blur
+                </label>
+
+                <div class="range-row">
+
+                    <input
+                        type="range"
+                        id="blur"
+                        min="0"
+                        max="20"
+                        value="0">
+
+                    <span
+                        class="range-value"
+                        id="blurValue">
+                        0
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="control">
+
+                <label class="label">
+                    Vignette
+                </label>
+
+                <div class="range-row">
+
+                    <input
+                        type="range"
+                        id="vignette"
+                        min="0"
+                        max="100"
+                        value="0">
+
+                    <span
+                        class="range-value"
+                        id="vignetteValue">
+                        0%
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="two">
+
+            <button
+                class="button"
+                id="resetBtn">
+                Reset
+            </button>
+
+            <button
+                class="button primary"
+                id="applyBtn">
+                Render
+            </button>
+
+        </div>
+
+    </div>
+
+</aside>
+
+
+<!-- ======================================================
+     CENTER CANVAS
+====================================================== -->
+
+<section class="workspace">
+
+    <div class="canvas-panel">
+
+        <div class="canvas-toolbar">
+
+            <div
+                class="image-info"
+                id="imageInfo">
+                No image selected
+            </div>
+
+            <div class="format-buttons">
+
+                <button
+                    class="format active"
+                    data-format="png">
+                    PNG
+                </button>
+
+                <button
+                    class="format"
+                    data-format="jpeg">
+                    JPG
+                </button>
+
+                <button
+                    class="format"
+                    data-format="webp">
+                    WebP
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="canvas-wrap">
+
+            <canvas id="canvas"></canvas>
+
+            <div
+                class="empty"
+                id="emptyState">
+
+                <div class="empty-icon">
+                    ✦
+                </div>
+
+                <h2>
+                    Your artwork appears here
+                </h2>
+
+                <p>
+                    Upload an image to begin.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="status"
+            id="status">
+
+            <div>
+                <span class="dot"></span>
+                Waiting for artwork
+            </div>
+
+            <div id="sizeInfo">
+                —
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     RIGHT PANEL
+====================================================== -->
+
+<aside class="panel right-panel">
+
+    <div class="panel-title">
+        Export Artwork
+    </div>
+
+    <div class="panel-inner">
+
+
+        <div class="section">
+
+            <div class="section-heading">
+                Export Settings
+            </div>
+
+
+            <div class="control">
+
+                <label class="label">
+                    Artwork Name
+                </label>
+
+                <div class="export-name">
+
+                    <input
+                        type="text"
+                        id="fileName"
+                        value="my-artwork">
+
+                    <div
+                        class="extension"
+                        id="extension">
+                        PNG
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="control">
+
+                <label class="label">
+                    Export Quality
+                </label>
+
+                <div class="range-row">
+
+                    <input
+                        type="range"
+                        id="quality"
+                        min="50"
+                        max="100"
+                        value="95">
+
+                    <span
+                        class="range-value"
+                        id="qualityValue">
+                        95%
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="section">
+
+            <button
+                class="button light full"
+                id="downloadBtn">
+                ↓ Download Artwork
+            </button>
+
+        </div>
+
+
+        <div class="section">
+
+            <div class="section-heading">
+                Artwork Information
+            </div>
+
+            <div
+                id="exportInfo"
+                style="
+                    color:#777;
+                    font-size:11px;
+                    line-height:1.8;
+                ">
+                Upload an image to see artwork information.
+            </div>
+
+        </div>
+
+
+        <div class="section">
+
+            <div class="section-heading">
+                Workflow
+            </div>
+
+            <div
+                style="
+                    color:#666;
+                    font-size:10px;
+                    line-height:1.8;
+                ">
+
+                01. Upload your image<br>
+                02. Create your gradient<br>
+                03. Add typography<br>
+                04. Add patterns<br>
+                05. Add texture<br>
+                06. Adjust the image<br>
+                07. Export your artwork
+
+            </div>
+
+        </div>
+
+    </div>
+
+</aside>
+
+</div>
+
+</main>
+
+
+<script>
+
+/* =========================================================
+   ART FORGE
+========================================================= */
+
+const fileInput =
+    document.getElementById("fileInput");
+
+const uploadBox =
+    document.getElementById("uploadBox");
+
+const canvas =
+    document.getElementById("canvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+const emptyState =
+    document.getElementById("emptyState");
+
+const imageInfo =
+    document.getElementById("imageInfo");
+
+const status =
+    document.getElementById("status");
+
+const sizeInfo =
+    document.getElementById("sizeInfo");
+
+let originalImage = null;
+let originalFile = null;
+
+let exportFormat = "png";
+
+
+/* =========================================================
+   GRADIENT STATE
+========================================================= */
+
+let colors = [
+    "#ff0055",
+    "#7b00ff"
+];
+
+let gradientType = "linear";
+
+
+/* =========================================================
+   TEXT STATE
+========================================================= */
+
+let textLayers = [];
+let selectedTextId = null;
+
+
+/* =========================================================
+   PATTERN STATE
+========================================================= */
+
+let patternType = "none";
+
+
+/* =========================================================
+   COLOR UI
+========================================================= */
+
+const colorList =
+    document.getElementById("colorList");
+
+function renderColors(){
+
+    colorList.innerHTML = "";
+
+    colors.forEach((color,index)=>{
+
+        const row =
+            document.createElement("div");
+
+        row.className = "color-row";
+
+
+        const picker =
+            document.createElement("input");
+
+        picker.type = "color";
+        picker.className = "color-picker";
+        picker.value = color;
+
+
+        const hex =
+            document.createElement("input");
+
+        hex.type = "text";
+        hex.className = "color-hex";
+        hex.value = color;
+
+
+        const remove =
+            document.createElement("button");
+
+        remove.className = "icon-btn";
+        remove.textContent = "×";
+
+
+        picker.addEventListener("input",()=>{
+
+            colors[index] =
+                picker.value;
+
+            hex.value =
+                picker.value;
+
+            render();
+
+        });
+
+
+        hex.addEventListener("change",()=>{
+
+            let value =
+                hex.value.trim();
+
+            if(!value.startsWith("#")){
+                value = "#" + value;
+            }
+
+            if(/^#[0-9a-fA-F]{6}$/.test(value)){
+
+                colors[index] =
+                    value;
+
+                picker.value =
+                    value;
+
+                render();
+
+            }
+            else{
+
+                hex.value =
+                    colors[index];
+
+            }
+
+        });
+
+
+        remove.addEventListener("click",()=>{
+
+            if(colors.length <= 2){
+                return;
+            }
+
+            colors.splice(index,1);
+
+            renderColors();
+            render();
+
+        });
+
+
+        row.appendChild(picker);
+        row.appendChild(hex);
+        row.appendChild(remove);
+
+        colorList.appendChild(row);
+
+    });
+
+}
+
+renderColors();
+
+
+document
+.getElementById("addColor")
+.addEventListener("click",()=>{
+
+    if(colors.length >= 8){
+        return;
+    }
+
+    colors.push("#ffffff");
+
+    renderColors();
+    render();
+
+});
+
+
+/* =========================================================
+   UPLOAD
+========================================================= */
+
+uploadBox.addEventListener("click",()=>{
+    fileInput.click();
+});
+
+
+fileInput.addEventListener("change",e=>{
+
+    const file =
+        e.target.files[0];
+
+    if(file){
+        loadImage(file);
+    }
+
+});
+
+
+uploadBox.addEventListener("dragover",e=>{
+
+    e.preventDefault();
+
+    uploadBox.classList.add("dragging");
+
+});
+
+
+uploadBox.addEventListener("dragleave",()=>{
+
+    uploadBox.classList.remove("dragging");
+
+});
+
+
+uploadBox.addEventListener("drop",e=>{
+
+    e.preventDefault();
+
+    uploadBox.classList.remove("dragging");
+
+    const file =
+        e.dataTransfer.files[0];
+
+    if(file){
+        loadImage(file);
+    }
+
+});
+
+
+function loadImage(file){
+
+    if(!/^image\/(jpeg|png|webp)$/.test(file.type)){
+
+        alert(
+            "Please upload JPG, PNG or WebP."
+        );
+
+        return;
+    }
+
+    originalFile = file;
+
+    const url =
+        URL.createObjectURL(file);
+
+    const img =
+        new Image();
+
+    img.onload = ()=>{
+
+        originalImage = img;
+
+        canvas.width =
+            img.naturalWidth;
+
+        canvas.height =
+            img.naturalHeight;
+
+        emptyState.style.display =
+            "none";
+
+        imageInfo.textContent =
+            `${file.name} · ${img.naturalWidth} × ${img.naturalHeight}`;
+
+        status.classList.add("ready");
+
+        render();
+
+        URL.revokeObjectURL(url);
+
+    };
+
+    img.onerror = ()=>{
+
+        alert(
+            "Unable to read this image."
+        );
+
+        URL.revokeObjectURL(url);
+
+    };
+
+    img.src = url;
+
+}
+
+
+/* =========================================================
+   GRADIENT
+========================================================= */
+
+function rgba(hex,a){
+
+    hex =
+        hex.replace("#","");
+
+    const r =
+        parseInt(hex.slice(0,2),16);
+
+    const g =
+        parseInt(hex.slice(2,4),16);
+
+    const b =
+        parseInt(hex.slice(4,6),16);
+
+    return `rgba(${r},${g},${b},${a})`;
+}
+
+
+function createGradient(){
+
+    const w =
+        canvas.width;
+
+    const h =
+        canvas.height;
+
+    const type =
+        document.getElementById("gradientType").value;
+
+    const opacity =
+        Number(
+            document.getElementById("gradientOpacity").value
+        ) / 100;
+
+    let gradient;
+
+
+    if(type === "linear"){
+
+        const degrees =
+            Number(
+                document.getElementById("angle").value
+            );
+
+        const radians =
+            degrees * Math.PI / 180;
+
+        const cx =
+            w / 2;
+
+        const cy =
+            h / 2;
+
+        const length =
+            Math.abs(w * Math.cos(radians)) +
+            Math.abs(h * Math.sin(radians));
+
+        gradient =
+            ctx.createLinearGradient(
+                cx - Math.cos(radians) * length / 2,
+                cy - Math.sin(radians) * length / 2,
+                cx + Math.cos(radians) * length / 2,
+                cy + Math.sin(radians) * length / 2
+            );
+
+    }
+
+    else if(type === "radial"){
+
+        gradient =
+            ctx.createRadialGradient(
+                w*.5,
+                h*.5,
+                0,
+                w*.5,
+                h*.5,
+                Math.sqrt(w*w+h*h)*.7
+            );
+
+    }
+
+    else{
+
+        const degrees =
+            Number(
+                document.getElementById("angle").value
+            );
+
+        gradient =
+            ctx.createConicGradient(
+                degrees * Math.PI / 180,
+                w*.5,
+                h*.5
+            );
+
+    }
+
+
+    colors.forEach((color,index)=>{
+
+        const position =
+            index / (colors.length - 1);
+
+        gradient.addColorStop(
+            position,
+            rgba(color,opacity)
+        );
+
+    });
+
+    return gradient;
+}
+
+
+/* =========================================================
+   PATTERN
+========================================================= */
+
+function drawPattern(){
+
+    if(patternType === "none"){
+        return;
+    }
+
+    const opacity =
+        Number(
+            document.getElementById("patternOpacity").value
+        ) / 100;
+
+    const size =
+        Number(
+            document.getElementById("patternSize").value
+        );
+
+    const color =
+        document.getElementById("patternColor").value;
+
+    const patternCanvas =
+        document.createElement("canvas");
+
+    patternCanvas.width =
+        size * 2;
+
+    patternCanvas.height =
+        size * 2;
+
+    const p =
+        patternCanvas.getContext("2d");
+
+    p.strokeStyle =
+        rgba(color,opacity);
+
+    p.fillStyle =
+        rgba(color,opacity);
+
+    p.lineWidth = 1;
+
+
+    if(patternType === "dots"){
+
+        p.beginPath();
+
+        p.arc(
+            size,
+            size,
+            1.5,
+            0,
+            Math.PI*2
+        );
+
+        p.fill();
+
+    }
+
+
+    else if(patternType === "grid"){
+
+        p.beginPath();
+
+        p.moveTo(size,0);
+        p.lineTo(size,size*2);
+
+        p.moveTo(0,size);
+        p.lineTo(size*2,size);
+
+        p.stroke();
+
+    }
+
+
+    else if(patternType === "diagonal"){
+
+        p.beginPath();
+
+        p.moveTo(0,size*2);
+        p.lineTo(size*2,0);
+
+        p.stroke();
+
+    }
+
+
+    else if(patternType === "cross"){
+
+        p.beginPath();
+
+        p.moveTo(size,0);
+        p.lineTo(size,size*2);
+
+        p.moveTo(0,size);
+        p.lineTo(size*2,size);
+
+        p.stroke();
+
+    }
+
+
+    else if(patternType === "diamond"){
+
+        p.beginPath();
+
+        p.moveTo(size,0);
+        p.lineTo(size*2,size);
+        p.lineTo(size,size*2);
+        p.lineTo(0,size);
+        p.closePath();
+
+        p.stroke();
+
+    }
+
+
+    const pattern =
+        ctx.createPattern(
+            patternCanvas,
+            "repeat"
+        );
+
+    ctx.fillStyle =
+        pattern;
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+}
+
+
+/* =========================================================
+   TEXTURE
+========================================================= */
+
+function drawTexture(){
+
+    const type =
+        document.getElementById("textureType").value;
+
+    if(type === "none"){
+        return;
+    }
+
+    const intensity =
+        Number(
+            document.getElementById("textureIntensity").value
+        ) / 100;
+
+
+    if(type === "scanlines"){
+
+        ctx.globalAlpha =
+            intensity * .45;
+
+        ctx.fillStyle =
+            "#000";
+
+        const lineHeight = 4;
+
+        for(
+            let y=0;
+            y<canvas.height;
+            y+=lineHeight
+        ){
+
+            ctx.fillRect(
+                0,
+                y,
+                canvas.width,
+                1
+            );
+
+        }
+
+        ctx.globalAlpha = 1;
+
+        return;
+    }
+
+
+    const noiseCanvas =
+        document.createElement("canvas");
+
+    noiseCanvas.width =
+        160;
+
+    noiseCanvas.height =
+        160;
+
+    const n =
+        noiseCanvas.getContext("2d");
+
+    const imageData =
+        n.createImageData(
+            160,
+            160
+        );
+
+    const data =
+        imageData.data;
+
+
+    for(
+        let i=0;
+        i<data.length;
+        i+=4
+    ){
+
+        const value =
+            Math.random()*255;
+
+        data[i] =
+            value;
+
+        data[i+1] =
+            value;
+
+        data[i+2] =
+            value;
+
+        data[i+3] =
+            255;
+
+    }
+
+
+    n.putImageData(
+        imageData,
+        0,
+        0
+    );
+
+
+    const pattern =
+        ctx.createPattern(
+            noiseCanvas,
+            "repeat"
+        );
+
+    ctx.globalAlpha =
+        type === "soft"
+            ? intensity*.12
+            : intensity*.22;
+
+    ctx.globalCompositeOperation =
+        type === "paper"
+            ? "multiply"
+            : "overlay";
+
+    ctx.fillStyle =
+        pattern;
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.globalAlpha = 1;
+
+    ctx.globalCompositeOperation =
+        "source-over";
+
+
+    if(type === "dust"){
+
+        ctx.globalAlpha =
+            intensity*.3;
+
+        ctx.fillStyle =
+            "#fff";
+
+        for(
+            let i=0;
+            i<canvas.width*canvas.height/8000;
+            i++
+        ){
+
+            const x =
+                Math.random()*canvas.width;
+
+            const y =
+                Math.random()*canvas.height;
+
+            const size =
+                Math.random()*3+1;
+
+            ctx.fillRect(
+                x,
+                y,
+                size,
+                size
+            );
+
+        }
+
+        ctx.globalAlpha = 1;
+
+    }
+
+}
+
+
+/* =========================================================
+   TEXT DRAWING
+========================================================= */
+
+function drawTextLayer(layer){
+
+    const w =
+        canvas.width;
+
+    const h =
+        canvas.height;
+
+    const x =
+        w * layer.x / 100;
+
+    const y =
+        h * layer.y / 100;
+
+    ctx.save();
+
+    ctx.globalAlpha =
+        layer.opacity;
+
+    ctx.font =
+        `${layer.weight} ${layer.size}px "${layer.font}"`;
+
+    ctx.textAlign =
+        "center";
+
+    ctx.textBaseline =
+        "middle";
+
+    ctx.globalCompositeOperation =
+        "source-over";
+
+
+    if(layer.shadow > 0){
+
+        ctx.shadowColor =
+            "rgba(0,0,0,.75)";
+
+        ctx.shadowBlur =
+            layer.shadow;
+
+        ctx.shadowOffsetX =
+            layer.shadow*.35;
+
+        ctx.shadowOffsetY =
+            layer.shadow*.35;
+
+    }
+
+
+    if(layer.stroke > 0){
+
+        ctx.lineWidth =
+            layer.stroke*2;
+
+        ctx.strokeStyle =
+            layer.strokeColor;
+
+        ctx.strokeText(
+            layer.text,
+            x,
+            y
+        );
+
+    }
+
+
+    ctx.fillStyle =
+        layer.color;
+
+
+    if(layer.letterSpacing === 0){
+
+        ctx.fillText(
+            layer.text,
+            x,
+            y
+        );
+
+    }
+
+    else{
+
+        drawSpacedText(
+            layer,
+            x,
+            y
+        );
+
+    }
+
+    ctx.restore();
+
+}
+
+
+function drawSpacedText(layer,x,y){
+
+    const characters =
+        [...layer.text];
+
+    const spacing =
+        layer.letterSpacing;
+
+    let total =
+        0;
+
+    characters.forEach(char=>{
+
+        total +=
+            ctx.measureText(char).width +
+            spacing;
+
+    });
+
+    total -= spacing;
+
+    let current =
+        x - total/2;
+
+    characters.forEach(char=>{
+
+        const width =
+            ctx.measureText(char).width;
+
+        ctx.fillText(
+            char,
+            current + width/2,
+            y
+        );
+
+        current +=
+            width + spacing;
+
+    });
+
+}
+
+
+/* =========================================================
+   VIGNETTE
+========================================================= */
+
+function drawVignette(){
+
+    const value =
+        Number(
+            document.getElementById("vignette").value
+        ) / 100;
+
+    if(value <= 0){
+        return;
+    }
+
+    const w =
+        canvas.width;
+
+    const h =
+        canvas.height;
+
+    const gradient =
+        ctx.createRadialGradient(
+            w/2,
+            h/2,
+            Math.min(w,h)*.2,
+            w/2,
+            h/2,
+            Math.max(w,h)*.72
+        );
+
+    gradient.addColorStop(
+        0,
+        "rgba(0,0,0,0)"
+    );
+
+    gradient.addColorStop(
+        1,
+        `rgba(0,0,0,${value*.85})`
+    );
+
+    ctx.fillStyle =
+        gradient;
+
+    ctx.fillRect(
+        0,
+        0,
+        w,
+        h
+    );
+
+}
+
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function render(){
+
+    if(!originalImage){
+        return;
+    }
+
+    const brightness =
+        Number(
+            document.getElementById("brightness").value
+        );
+
+    const contrast =
+        Number(
+            document.getElementById("contrast").value
+        );
+
+    const saturation =
+        Number(
+            document.getElementById("saturation").value
+        );
+
+    const blur =
+        Number(
+            document.getElementById("blur").value
+        );
+
+
+    canvas.width =
+        originalImage.naturalWidth;
+
+    canvas.height =
+        originalImage.naturalHeight;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    /* Image */
+
+    ctx.save();
+
+    ctx.filter =
+        `brightness(${100+brightness}%)
+         contrast(${100+contrast}%)
+         saturate(${100+saturation}%)
+         blur(${blur}px)`;
+
+    ctx.drawImage(
+        originalImage,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.restore();
+
+
+    /* Gradient */
+
+    ctx.globalCompositeOperation =
+        document.getElementById("gradientBlend").value;
+
+    ctx.fillStyle =
+        createGradient();
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.globalCompositeOperation =
+        "source-over";
+
+
+    /* Pattern */
+
+    drawPattern();
+
+
+    /* Texture */
+
+    drawTexture();
+
+
+    /* Vignette */
+
+    drawVignette();
+
+
+    /* Text */
+
+    textLayers.forEach(layer=>{
+        drawTextLayer(layer);
+    });
+
+
+    ctx.globalAlpha = 1;
+
+    ctx.globalCompositeOperation =
+        "source-over";
+
+
+    updateInfo();
+
+}
+
+
+/* =========================================================
+   TEXT LAYER SYSTEM
+========================================================= */
+
+const textInput =
+    document.getElementById("textInput");
+
+const textLayersUI =
+    document.getElementById("textLayers");
+
+const textControls =
+    document.getElementById("textControls");
+
+
+document
+.getElementById("addText")
+.addEventListener("click",()=>{
+
+    const text =
+        textInput.value.trim();
+
+    if(!text){
+        return;
+    }
+
+    const layer = {
+
+        id:
+            Date.now(),
+
+        text,
+
+        font:"Inter",
+
+        size:90,
+
+        weight:"700",
+
+        x:50,
+
+        y:50,
+
+        color:"#ffffff",
+
+        opacity:1,
+
+        letterSpacing:0,
+
+        shadow:0,
+
+        stroke:0,
+
+        strokeColor:"#000000"
+
+    };
+
+    textLayers.push(layer);
+
+    selectedTextId =
+        layer.id;
+
+    textInput.value = "";
+
+    renderTextLayers();
+
+    loadSelectedText();
+
+    render();
+
+});
+
+
+function renderTextLayers(){
+
+    textLayersUI.innerHTML = "";
+
+    textLayers.forEach(layer=>{
+
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "layer" +
+            (layer.id === selectedTextId
+                ? " active"
+                : "");
+
+        const name =
+            document.createElement("div");
+
+        name.className =
+            "layer-name";
+
+        name.textContent =
+            layer.text;
+
+
+        const del =
+            document.createElement("button");
+
+        del.className =
+            "layer-delete";
+
+        del.textContent =
+            "×";
+
+
+        row.addEventListener("click",()=>{
+
+            selectedTextId =
+                layer.id;
+
+            renderTextLayers();
+
+            loadSelectedText();
+
+            render();
+
+        });
+
+
+        del.addEventListener("click",e=>{
+
+            e.stopPropagation();
+
+            textLayers =
+                textLayers.filter(
+                    item =>
+                        item.id !== layer.id
+                );
+
+            if(selectedTextId === layer.id){
+
+                selectedTextId =
+                    textLayers.length
+                        ? textLayers[textLayers.length-1].id
+                        : null;
+
+            }
+
+            renderTextLayers();
+            loadSelectedText();
+            render();
+
+        });
+
+
+        row.appendChild(name);
+        row.appendChild(del);
+
+        textLayersUI.appendChild(row);
+
+    });
+
+}
+
+
+function getSelectedText(){
+
+    return textLayers.find(
+        layer =>
+            layer.id === selectedTextId
+    );
+
+}
+
+
+function loadSelectedText(){
+
+    const layer =
+        getSelectedText();
+
+    if(!layer){
+
+        textControls.style.display =
+            "none";
+
+        return;
+    }
+
+    textControls.style.display =
+        "block";
+
+
+    document.getElementById("fontFamily").value =
+        layer.font;
+
+    document.getElementById("fontSize").value =
+        layer.size;
+
+    document.getElementById("textX").value =
+        layer.x;
+
+    document.getElementById("textY").value =
+        layer.y;
+
+    document.getElementById("letterSpacing").value =
+        layer.letterSpacing;
+
+    document.getElementById("textOpacity").value =
+        layer.opacity*100;
+
+    document.getElementById("textColor").value =
+        layer.color;
+
+    document.getElementById("textHex").value =
+        layer.color;
+
+    document.getElementById("textShadow").value =
+        layer.shadow;
+
+    document.getElementById("textStroke").value =
+        layer.stroke;
+
+
+    updateTextValues();
+
+}
+
+
+function updateTextLayer(property,value){
+
+    const layer =
+        getSelectedText();
+
+    if(!layer){
+        return;
+    }
+
+    layer[property] =
+        value;
+
+    render();
+
+}
+
+
+function updateTextValues(){
+
+    const layer =
+        getSelectedText();
+
+    if(!layer){
+        return;
+    }
+
+    document.getElementById("fontSizeValue")
+        .textContent =
+        layer.size;
+
+    document.getElementById("textXValue")
+        .textContent =
+        layer.x + "%";
+
+    document.getElementById("textYValue")
+        .textContent =
+        layer.y + "%";
+
+    document.getElementById("letterSpacingValue")
+        .textContent =
+        layer.letterSpacing;
+
+    document.getElementById("textOpacityValue")
+        .textContent =
+        Math.round(layer.opacity*100) + "%";
+
+    document.getElementById("textShadowValue")
+        .textContent =
+        layer.shadow;
+
+    document.getElementById("textStrokeValue")
+        .textContent =
+        layer.stroke;
+
+}
+
+
+/* TEXT CONTROLS */
+
+document
+.getElementById("fontFamily")
+.addEventListener("change",e=>{
+
+    updateTextLayer(
+        "font",
+        e.target.value
+    );
+
+});
+
+
+document
+.getElementById("fontSize")
+.addEventListener("input",e=>{
+
+    updateTextLayer(
+        "size",
+        Number(e.target.value)
+    );
+
+    updateTextValues();
+
+});
+
+
+document
+.getElementById("textX")
+.addEventListener("input",e=>{
+
+    updateTextLayer(
+        "x",
+        Number(e.target.value)
+    );
+
+    updateTextValues();
+
+});
+
+
+document
+.getElementById("textY")
+.addEventListener("input",e=>{
+
+    updateTextLayer(
+        "y",
+        Number(e.target.value)
+    );
+
+    updateTextValues();
+
+});
+
+
+document
+.getElementById("letterSpacing")
+.addEventListener("input",e=>{
+
+    updateTextLayer(
+        "letterSpacing",
+        Number(e.target.value)
+    );
+
+    updateTextValues();
+
+});
+
+
+document
+.getElementById("textOpacity")
+.addEventListener("input",e=>{
+
+    updateTextLayer(
+        "opacity",
+        Number(e.target.value)/100
+    );
+
+    updateTextValues();
+
+});
+
+
+document
+.getElementById("textColor")
+.addEventListener("input",e=>{
+
+    const layer =
+        getSelectedText();
+
+    if(!layer){
+        return;
+    }
+
+    layer.color =
+        e.target.value;
+
+    document.getElementById("textHex")
+        .value =
+        e.target.value;
+
+    render();
+
+});
+
+
+document
+.getElementById("textHex")
+.addEventListener("change",e=>{
+
+    let value =
+        e.target.value.trim();
+
+    if(!value.startsWith("#")){
+        value = "#" + value;
+    }
+
+    if(/^#[0-9a-fA-F]{6}$/.test(value)){
+
+        const layer =
+            getSelectedText();
+
+        if(layer){
+
+            layer.color =
+                value;
+
+            document.getElementById("textColor")
+                .value =
+                value;
+
+            render();
+
+        }
+
+    }
+
+});
+
+
+document
+.getElementById("textShadow")
+.addEventListener("input",e=>{
+
+    updateTextLayer(
+        "shadow",
+        Number(e.target.value)
+    );
+
+    updateTextValues();
+
+});
+
+
+document
+.getElementById("textStroke")
+.addEventListener("input",e=>{
+
+    updateTextLayer(
+        "stroke",
+        Number(e.target.value)
+    );
+
+    updateTextValues();
+
+});
+
+
+document
+.getElementById("deleteText")
+.addEventListener("click",()=>{
+
+    if(!selectedTextId){
+        return;
+    }
+
+    textLayers =
+        textLayers.filter(
+            layer =>
+                layer.id !== selectedTextId
+        );
+
+    selectedTextId =
+        textLayers.length
+            ? textLayers[textLayers.length-1].id
+            : null;
+
+    renderTextLayers();
+    loadSelectedText();
+    render();
+
+});
+
+
+/* =========================================================
+   PATTERN CONTROLS
+========================================================= */
+
+document
+.querySelectorAll(".pattern-option")
+.forEach(button=>{
+
+    button.addEventListener("click",()=>{
+
+        document
+        .querySelectorAll(".pattern-option")
+        .forEach(item=>{
+            item.classList.remove("active");
+        });
+
+        button.classList.add("active");
+
+        patternType =
+            button.dataset.pattern;
+
+        document.getElementById("patternControls")
+            .style.display =
+                patternType === "none"
+                    ? "none"
+                    : "block";
+
+        render();
+
+    });
+
+});
+
+
+document
+.getElementById("patternOpacity")
+.addEventListener("input",e=>{
+
+    document.getElementById("patternOpacityValue")
+        .textContent =
+        e.target.value + "%";
+
+    render();
+
+});
+
+
+document
+.getElementById("patternSize")
+.addEventListener("input",e=>{
+
+    document.getElementById("patternSizeValue")
+        .textContent =
+        e.target.value;
+
+    render();
+
+});
+
+
+document
+.getElementById("patternColor")
+.addEventListener("input",render);
+
+
+/* =========================================================
+   TEXTURE CONTROLS
+========================================================= */
+
+document
+.getElementById("textureType")
+.addEventListener("change",e=>{
+
+    const active =
+        e.target.value !== "none";
+
+    document.getElementById("textureControls")
+        .style.display =
+        active
+            ? "block"
+            : "none";
+
+    render();
+
+});
+
+
+document
+.getElementById("textureIntensity")
+.addEventListener("input",e=>{
+
+    document.getElementById("textureIntensityValue")
+        .textContent =
+        e.target.value + "%";
+
+    render();
+
+});
+
+
+/* =========================================================
+   GRADIENT CONTROLS
+========================================================= */
+
+document
+.getElementById("gradientType")
+.addEventListener("change",render);
+
+document
+.getElementById("gradientBlend")
+.addEventListener("change",render);
+
+
+document
+.getElementById("angle")
+.addEventListener("input",e=>{
+
+    document.getElementById("angleValue")
+        .textContent =
+        e.target.value + "°";
+
+    render();
+
+});
+
+
+document
+.getElementById("gradientOpacity")
+.addEventListener("input",e=>{
+
+    document.getElementById("gradientOpacityValue")
+        .textContent =
+        e.target.value + "%";
+
+    render();
+
+});
+
+
+/* PRESETS */
+
+document
+.querySelectorAll(".preset")
+.forEach(button=>{
+
+    button.addEventListener("click",()=>{
+
+        document
+        .querySelectorAll(".preset")
+        .forEach(item=>{
+            item.classList.remove("active");
+        });
+
+        button.classList.add("active");
+
+        colors =
+            button.dataset.colors.split(",");
+
+        renderColors();
+        render();
+
+    });
+
+});
+
+
+/* =========================================================
+   IMAGE ADJUSTMENTS
+========================================================= */
+
+const adjustments = [
+    ["brightness","brightnessValue"],
+    ["contrast","contrastValue"],
+    ["saturation","saturationValue"],
+    ["blur","blurValue"],
+    ["vignette","vignetteValue"]
+];
+
+adjustments.forEach(([id,valueId])=>{
+
+    document
+    .getElementById(id)
+    .addEventListener("input",e=>{
+
+        let suffix = "";
+
+        if(
+            id === "vignette"
+        ){
+            suffix = "%";
+        }
+
+        document
+        .getElementById(valueId)
+        .textContent =
+            e.target.value + suffix;
+
+        render();
+
+    });
+
+});
+
+
+/* =========================================================
+   FORMAT
+========================================================= */
+
+document
+.querySelectorAll(".format")
+.forEach(button=>{
+
+    button.addEventListener("click",()=>{
+
+        document
+        .querySelectorAll(".format")
+        .forEach(item=>{
+            item.classList.remove("active");
+        });
+
+        button.classList.add("active");
+
+        exportFormat =
+            button.dataset.format;
+
+        document.getElementById("extension")
+            .textContent =
+            exportFormat === "jpeg"
+                ? "JPG"
+                : exportFormat.toUpperCase();
+
+    });
+
+});
+
+
+/* =========================================================
+   QUALITY
+========================================================= */
+
+document
+.getElementById("quality")
+.addEventListener("input",e=>{
+
+    document.getElementById("qualityValue")
+        .textContent =
+        e.target.value + "%";
+
+});
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+document
+.getElementById("resetBtn")
+.addEventListener("click",()=>{
+
+    colors = [
+        "#ff0055",
+        "#7b00ff"
+    ];
+
+    textLayers = [];
+
+    selectedTextId = null;
+
+    patternType = "none";
+
+
+    document.getElementById("gradientType")
+        .value =
+        "linear";
+
+    document.getElementById("angle")
+        .value =
+        135;
+
+    document.getElementById("gradientOpacity")
+        .value =
+        70;
+
+    document.getElementById("gradientBlend")
+        .value =
+        "source-over";
+
+
+    document.getElementById("patternControls")
+        .style.display =
+        "none";
+
+    document.getElementById("textureControls")
+        .style.display =
+        "none";
+
+    document.getElementById("textureType")
+        .value =
+        "none";
+
+
+    [
+        ["brightness",0],
+        ["contrast",0],
+        ["saturation",0],
+        ["blur",0],
+        ["vignette",0]
+    ].forEach(([id,value])=>{
+
+        document.getElementById(id)
+            .value =
+            value;
+
+    });
+
+
+    document.getElementById("brightnessValue")
+        .textContent = "0";
+
+    document.getElementById("contrastValue")
+        .textContent = "0";
+
+    document.getElementById("saturationValue")
+        .textContent = "0";
+
+    document.getElementById("blurValue")
+        .textContent = "0";
+
+    document.getElementById("vignetteValue")
+        .textContent = "0%";
+
+
+    document.getElementById("angleValue")
+        .textContent = "135°";
+
+    document.getElementById("gradientOpacityValue")
+        .textContent = "70%";
+
+
+    renderColors();
+    renderTextLayers();
+    loadSelectedText();
+
+    if(originalImage){
+        render();
+    }
+
+});
+
+
+/* =========================================================
+   APPLY / RENDER
+========================================================= */
+
+document
+.getElementById("applyBtn")
+.addEventListener("click",()=>{
+
+    if(!originalImage){
+
+        alert(
+            "Please upload an image first."
+        );
+
+        return;
+    }
+
+    render();
+
+});
+
+
+/* =========================================================
+   EXPORT
+========================================================= */
+
+document
+.getElementById("downloadBtn")
+.addEventListener("click",()=>{
+
+    if(!originalImage){
+
+        alert(
+            "Please upload an image first."
+        );
+
+        return;
+    }
+
+    render();
+
+
+    let mime;
+
+    let extension;
+
+
+    if(exportFormat === "jpeg"){
+
+        mime =
+            "image/jpeg";
+
+        extension =
+            "jpg";
+
+    }
+
+    else if(exportFormat === "webp"){
+
+        mime =
+            "image/webp";
+
+        extension =
+            "webp";
+
+    }
+
+    else{
+
+        mime =
+            "image/png";
+
+        extension =
+            "png";
+
+    }
+
+
+    const quality =
+        Number(
+            document.getElementById("quality").value
+        ) / 100;
+
+
+    canvas.toBlob(
+        blob=>{
+
+            if(!blob){
+
+                alert(
+                    "Unable to export artwork."
+                );
+
+                return;
+            }
+
+
+            const url =
+                URL.createObjectURL(blob);
+
+            const a =
+                document.createElement("a");
+
+
+            let filename =
+                document.getElementById("fileName")
+                    .value
+                    .trim();
+
+
+            if(!filename){
+
+                filename =
+                    "my-artwork";
+
+            }
+
+
+            filename =
+                filename
+                .replace(/[<>:"/\\|?*]+/g,"-");
+
+
+            a.href =
+                url;
+
+            a.download =
+                `${filename}.${extension}`;
+
+
+            document.body.appendChild(a);
+
+            a.click();
+
+            a.remove();
+
+            URL.revokeObjectURL(url);
+
+
+        },
+        mime,
+        quality
+    );
+
+});
+
+
+/* =========================================================
+   INFORMATION
+========================================================= */
+
+function updateInfo(){
+
+    if(!originalImage){
+        return;
+    }
+
+    const width =
+        canvas.width;
+
+    const height =
+        canvas.height;
+
+
+    sizeInfo.textContent =
+        `${width} × ${height}`;
+
+
+    document.getElementById("exportInfo")
+        .innerHTML = `
+            <strong style="color:#aaa;">
+                ${width} × ${height}px
+            </strong><br>
+            ${textLayers.length} text layer${textLayers.length===1?"":"s"}<br>
+            Gradient: ${document.getElementById("gradientType").value}<br>
+            Pattern: ${patternType}<br>
+            Texture: ${document.getElementById("textureType").value}<br>
+            Export: ${exportFormat.toUpperCase()}
+        `;
+
+}
+
+
+/* =========================================================
+   INITIAL VALUES
+========================================================= */
+
+document.getElementById("angleValue")
+    .textContent = "135°";
+
+document.getElementById("gradientOpacityValue")
+    .textContent = "70%";
+
+document.getElementById("qualityValue")
+    .textContent = "95%";
+
+</script>
+
+</body>
+</html>
