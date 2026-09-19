@@ -623,6 +623,457 @@ input[type=range]{
     filter:brightness(1.12);
 }
 
+/* =========================================================
+   DOWNLOAD VAULT COMPONENT STYLING & MICRO-INTERACTIONS
+========================================================= */
+
+.download-vault-card{
+    display:none;
+    position:relative;
+    width:100%;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    padding:8px 14px;
+    background:rgba(18, 22, 30, 0.92);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border:1px solid rgba(255, 255, 255, 0.10);
+    border-radius:12px;
+    box-shadow:0 4px 20px rgba(0, 0, 0, 0.4);
+    transition:transform .28s cubic-bezier(0.16, 1, 0.3, 1),
+               box-shadow .28s cubic-bezier(0.16, 1, 0.3, 1),
+               border-color .28s ease;
+    overflow:hidden;
+    user-select:none;
+    box-sizing:border-box;
+}
+
+.download-vault-card:hover{
+    transform:translateY(-1.5px);
+    box-shadow:0 8px 28px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.16);
+    border-color:rgba(255, 255, 255, 0.18);
+}
+
+/* Animated accent progress line along bottom border */
+.vault-card-glow-line{
+    position:absolute;
+    bottom:0;
+    left:0;
+    height:2.5px;
+    width:0%;
+    background:linear-gradient(90deg, transparent, var(--accent2, #00d4ff), var(--accent, #7c5cff), transparent);
+    background-size:200% 100%;
+    opacity:0;
+    transition:opacity .3s ease, width .2s ease;
+    pointer-events:none;
+}
+
+.download-vault-card:hover .vault-card-glow-line{
+    opacity:.95;
+    width:100%;
+    animation:vaultSweep 2.2s linear infinite;
+}
+
+@keyframes vaultSweep{
+    0%{ background-position:-200% 0; }
+    100%{ background-position:200% 0; }
+}
+
+.download-vault-card.card-downloading .vault-card-glow-line{
+    opacity:1;
+    background:linear-gradient(90deg, var(--accent, #7c5cff), var(--accent2, #00d4ff));
+    animation:none;
+}
+
+.download-vault-card.card-complete .vault-card-glow-line{
+    opacity:1;
+    width:100% !important;
+    background:linear-gradient(90deg, #10b981, #34d399);
+}
+
+/* Vault File Information Block */
+.vault-file-section{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+    flex:1 1 auto;
+    overflow:hidden;
+}
+
+.vault-file-icon-wrap{
+    position:relative;
+    width:32px;
+    height:38px;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:transform .25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.download-vault-card:hover .vault-file-icon-wrap{
+    transform:translateY(-2px);
+}
+
+.vault-file-svg{
+    width:100%;
+    height:100%;
+    filter:drop-shadow(0 2px 5px rgba(0,0,0,0.4));
+}
+
+.vault-icon-pulse-ring{
+    position:absolute;
+    inset:-4px;
+    border-radius:8px;
+    border:1.5px dashed var(--accent2, #00d4ff);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .3s ease;
+}
+
+.download-vault-card.card-downloading .vault-icon-pulse-ring{
+    opacity:1;
+    animation:vaultPulseSpin 1.8s linear infinite;
+}
+
+@keyframes vaultPulseSpin{
+    0%{ transform:rotate(0deg) scale(0.95); opacity:0.3; }
+    50%{ transform:rotate(180deg) scale(1.08); opacity:0.8; }
+    100%{ transform:rotate(360deg) scale(0.95); opacity:0.3; }
+}
+
+.vault-file-meta{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    overflow:hidden;
+    flex:1 1 auto;
+}
+
+.vault-file-header{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    min-width:0;
+}
+
+.vault-file-name{
+    font-size:12px;
+    font-weight:700;
+    color:#f7f8fb;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    letter-spacing:-.2px;
+    max-width:280px;
+    flex-shrink:1;
+}
+
+.vault-status-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:2px 7px;
+    background:rgba(255, 255, 255, 0.05);
+    border:1px solid rgba(255, 255, 255, 0.09);
+    border-radius:20px;
+    font-size:9.5px;
+    font-weight:600;
+    color:#a0a6b5;
+    white-space:nowrap;
+    flex-shrink:0;
+}
+
+.vault-status-dot{
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:var(--success, #48e6a1);
+    box-shadow:0 0 6px var(--success, #48e6a1);
+    animation:vaultDotPulse 2s infinite ease-in-out;
+}
+
+@keyframes vaultDotPulse{
+    0%, 100%{ opacity:0.6; transform:scale(0.9); }
+    50%{ opacity:1; transform:scale(1.2); }
+}
+
+.vault-file-subtext{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:10px;
+    color:#8c94a3;
+    white-space:nowrap;
+    overflow:hidden;
+}
+
+.vault-meta-sep{
+    color:#4e5564;
+}
+
+.vault-meta-dims{
+    color:#cfd5df;
+    font-weight:600;
+}
+
+.vault-meta-size{
+    color:var(--accent2, #00d4ff);
+    font-weight:700;
+}
+
+/* Format Pills and Action Button Controls */
+.vault-controls-section{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-shrink:0;
+    margin-left:auto;
+}
+
+.vault-format-pills{
+    display:inline-flex;
+    align-items:center;
+    background:rgba(12, 15, 22, 0.85);
+    border:1px solid rgba(255, 255, 255, 0.09);
+    border-radius:8px;
+    padding:2.5px;
+    gap:2px;
+    flex-shrink:0;
+}
+
+.vault-format-pill{
+    background:transparent;
+    border:none;
+    color:#8c94a3;
+    padding:5px 9px;
+    font-size:10.5px;
+    font-weight:700;
+    border-radius:6px;
+    cursor:pointer;
+    transition:all .18s ease;
+    line-height:1;
+    flex-shrink:0;
+}
+
+.vault-format-pill:hover{
+    color:#fff;
+    background:rgba(255, 255, 255, 0.08);
+}
+
+.vault-format-pill.active{
+    background:#fff;
+    color:#0a0c11;
+    box-shadow:0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* Interactive Download Vault Button */
+.vault-download-btn{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:8px 18px;
+    min-width:142px;
+    background:linear-gradient(135deg, var(--accent2, #00d4ff) 0%, var(--accent, #7c5cff) 100%);
+    border:none;
+    border-radius:8px;
+    color:#fff;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.2px;
+    cursor:pointer;
+    white-space:nowrap;
+    box-shadow:0 4px 18px rgba(124, 92, 255, 0.35);
+    transition:transform .2s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow .2s cubic-bezier(0.16, 1, 0.3, 1),
+                background .3s ease,
+                filter .2s ease;
+    outline:none;
+    overflow:hidden;
+    flex-shrink:0;
+}
+
+.vault-download-btn:hover{
+    transform:translateY(-1.5px);
+    box-shadow:0 6px 22px rgba(124, 92, 255, 0.5);
+    filter:brightness(1.08);
+}
+
+.vault-download-btn:active{
+    transform:translateY(0);
+    box-shadow:0 2px 8px rgba(124, 92, 255, 0.35);
+}
+
+.vault-download-btn:focus-visible{
+    box-shadow:0 0 0 2px #06070a, 0 0 0 4px var(--accent2, #00d4ff);
+}
+
+/* Subtle rotating dashed accent ring around button on hover */
+.vault-btn-ambient-ring{
+    position:absolute;
+    inset:-2px;
+    border-radius:10px;
+    border:1.5px dashed rgba(255, 255, 255, 0.25);
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .3s ease;
+}
+
+.vault-download-btn:hover .vault-btn-ambient-ring{
+    opacity:1;
+    animation:vaultRingSpin 3s linear infinite;
+}
+
+@keyframes vaultRingSpin{
+    from{ transform:rotate(0deg); }
+    to{ transform:rotate(360deg); }
+}
+
+/* Button Icon Box & Icons */
+.vault-btn-icon-box{
+    position:relative;
+    width:16px;
+    height:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+
+.vault-icon-arrow{
+    width:15px;
+    height:15px;
+    transition:transform .2s ease, opacity .2s ease;
+}
+
+.vault-download-btn:hover .vault-icon-arrow{
+    transform:translateY(-2px);
+}
+
+/* Circular Progress Ring */
+.vault-icon-progress{
+    position:absolute;
+    width:16px;
+    height:16px;
+    transform:rotate(-90deg);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+}
+
+.vault-progress-track{
+    fill:none;
+    stroke:rgba(255, 255, 255, 0.25);
+    stroke-width:2.8;
+}
+
+.vault-progress-circle{
+    fill:none;
+    stroke:#ffffff;
+    stroke-width:2.8;
+    stroke-linecap:round;
+    stroke-dasharray:56.55;
+    stroke-dashoffset:56.55;
+    transition:stroke-dashoffset .08s linear;
+}
+
+/* Checkmark Icon */
+.vault-icon-check{
+    position:absolute;
+    width:15px;
+    height:15px;
+    opacity:0;
+    transform:scale(0.6);
+    pointer-events:none;
+    transition:opacity .2s ease, transform .25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vault-check-path{
+    stroke:#fff;
+    stroke-dasharray:24;
+    stroke-dashoffset:24;
+}
+
+/* ACTIVE DOWNLOADING STATE */
+.vault-download-btn.is-downloading{
+    cursor:wait;
+    pointer-events:none;
+    filter:none;
+    background:linear-gradient(135deg, #5b3fd4 0%, #3f289d 100%);
+    box-shadow:0 2px 12px rgba(124, 92, 255, 0.4);
+}
+
+.vault-download-btn.is-downloading .vault-icon-arrow{
+    opacity:0;
+    transform:translateY(6px) scale(0.5);
+}
+
+.vault-download-btn.is-downloading .vault-icon-progress{
+    opacity:1;
+    transform:rotate(-90deg) scale(1);
+}
+
+/* COMPLETION STATE */
+.vault-download-btn.is-complete{
+    background:linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow:0 4px 20px rgba(16, 185, 129, 0.45);
+    animation:vaultSuccessPulse .6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes vaultSuccessPulse{
+    0%{ transform:scale(0.95); box-shadow:0 0 0 0 rgba(16, 185, 129, 0.7); }
+    50%{ transform:scale(1.04); box-shadow:0 0 0 12px rgba(16, 185, 129, 0); }
+    100%{ transform:scale(1); }
+}
+
+.vault-download-btn.is-complete .vault-icon-arrow{
+    opacity:0;
+    display:none;
+}
+
+.vault-download-btn.is-complete .vault-icon-progress{
+    opacity:0;
+    display:none;
+}
+
+.vault-download-btn.is-complete .vault-icon-check{
+    opacity:1;
+    transform:scale(1);
+}
+
+.vault-download-btn.is-complete .vault-check-path{
+    animation:vaultCheckStroke .45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes vaultCheckStroke{
+    from{ stroke-dashoffset:24; }
+    to{ stroke-dashoffset:0; }
+}
+
+/* Accessibility: Prefers reduced motion */
+@media (prefers-reduced-motion: reduce){
+    .download-vault-card,
+    .vault-download-btn,
+    .vault-file-icon-wrap,
+    .vault-icon-arrow,
+    .vault-card-glow-line{
+        transition:none !important;
+        animation:none !important;
+        transform:none !important;
+    }
+    .vault-status-dot{
+        animation:none !important;
+    }
+    .vault-check-path{
+        stroke-dashoffset:0 !important;
+    }
+}
+
 .canvas-wrap{
     flex:1;
     min-height:590px;
@@ -853,6 +1304,62 @@ input[type=range]{
         gap:8px;
     }
 
+    .download-vault-card{
+        width:100%;
+        flex-direction:column;
+        align-items:stretch;
+        gap:10px;
+        padding:10px 12px;
+    }
+
+    .vault-file-section{
+        width:100%;
+    }
+
+    .vault-file-name{
+        max-width:200px;
+    }
+
+    .vault-controls-section{
+        width:100%;
+        justify-content:space-between;
+        flex-wrap:wrap;
+        gap:8px;
+    }
+
+    .vault-format-pills{
+        flex:1;
+        justify-content:center;
+    }
+
+    .vault-format-pill{
+        flex:1;
+        text-align:center;
+        padding:7px 4px;
+        min-height:36px;
+    }
+
+    .vault-download-btn{
+        flex:1.2;
+        min-height:38px;
+        padding:8px 12px;
+    }
+
+    @media (max-width: 480px){
+        .vault-controls-section{
+            flex-direction:column;
+            align-items:stretch;
+            gap:8px;
+        }
+        .vault-download-btn{
+            width:100%;
+            min-height:44px;
+        }
+        .vault-file-name{
+            max-width:140px;
+        }
+    }
+
     .format-buttons{
         flex:1;
         min-width:180px;
@@ -928,8 +1435,9 @@ main{width:min(1640px,96%)!important;padding:28px 0 60px!important}
  background:linear-gradient(100deg,#fff 10%,#bcb4ff 48%,#72e6ff 90%);
  -webkit-background-clip:text;background-clip:text;color:transparent;
 }
-.hero p{color:#8f97a6!important}
-.editor{grid-template-columns:365px minmax(0,1fr) 330px!important;gap:14px!important}
+.editor{grid-template-columns:minmax(310px,365px) minmax(0,1fr)!important;gap:16px!important}
+.workspace,.canvas-panel{width:100%!important;min-width:0!important}
+.right-panel{grid-column:1 / -1!important;width:100%!important;position:relative!important;top:auto!important;max-height:none!important;margin-top:14px}
 .panel,.canvas-panel{
  background:linear-gradient(180deg,rgba(20,24,32,.88),rgba(11,13,18,.94))!important;
  border:1px solid rgba(255,255,255,.09)!important;box-shadow:var(--shadow);
@@ -1012,8 +1520,8 @@ main,.editor,.workspace,.panel,.canvas-panel,.panel-inner{min-width:0;max-width:
 .editor{
   width:100%;
   display:grid;
-  grid-template-columns:minmax(300px,365px) minmax(0,1fr) minmax(280px,330px);
-  gap:14px;
+  grid-template-columns:minmax(310px,365px) minmax(0,1fr);
+  gap:16px;
   align-items:start;
 }
 
@@ -1420,7 +1928,7 @@ input[type=range]{min-width:0;width:100%}
 <aside class="panel left-panel">
 
     <div class="panel-title">
-        Artwork Controls
+        Artwork Controler
     </div>
 
     <div class="panel-inner">
@@ -2867,58 +3375,93 @@ input[type=range]{min-width:0;width:100%}
                 No image selected
             </div>
 
-            <div class="canvas-download-group" id="canvasDownloadGroup" style="display:none; align-items:center; gap:8px;">
+            <!-- Interactive Download Vault Card -->
+            <div class="download-vault-card" id="downloadVaultCard" role="region" aria-label="Artwork Download Vault">
+                <!-- Ambient glowing progress line along bottom border -->
+                <div class="vault-card-glow-line" id="vaultCardGlowLine"></div>
 
-                <div class="format-buttons" title="Select format">
+                <!-- File info block -->
+                <div class="vault-file-section">
+                    <div class="vault-file-icon-wrap" id="vaultFileIconWrap" aria-hidden="true" title="Artwork file">
+                        <svg class="vault-file-svg" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 2C2.89543 2 2 2.89543 2 4V36C2 37.1046 2.89543 38 4 38H28C29.1046 38 30 37.1046 30 36V11L21 2H4Z" fill="#141822" stroke="rgba(255,255,255,0.18)" stroke-width="1.6"/>
+                            <path d="M21 2V9C21 10.1046 21.8954 11 23 11H30" stroke="rgba(255,255,255,0.22)" stroke-width="1.6" stroke-linejoin="round"/>
+                            <rect x="4" y="19" width="24" height="13" rx="3" fill="rgba(0, 212, 255, 0.14)" stroke="var(--accent2, #00d4ff)" stroke-width="1.2"/>
+                            <text x="16" y="28.2" font-size="7.2" font-weight="800" fill="#00d4ff" text-anchor="middle" letter-spacing="0.5" id="vaultFileIconType">PNG</text>
+                        </svg>
+                        <div class="vault-icon-pulse-ring"></div>
+                    </div>
 
-                    <button
-                        class="format active"
-                        data-format="png"
-                        type="button">
-                        PNG
-                    </button>
-
-                    <button
-                        class="format"
-                        data-format="jpeg"
-                        type="button">
-                        JPG
-                    </button>
-
-                    <button
-                        class="format"
-                        data-format="webp"
-                        type="button">
-                        WebP
-                    </button>
-
-                </div>
-
-                <div class="quick-download-wrapper" style="position:relative;display:inline-flex;align-items:stretch;">
-                    <button class="button primary" id="quickDownloadBtn" type="button" title="Download artwork" style="padding:7px 15px;font-size:11.5px;font-weight:700;display:inline-flex;align-items:center;gap:6px;border-radius:8px 0 0 8px;cursor:pointer;white-space:nowrap;background:linear-gradient(135deg,var(--accent2),#9b0015);border:none;color:#fff;box-shadow:0 3px 12px rgba(193,18,31,0.35);">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        <span id="quickDownloadBtnText">Download Art (PNG)</span>
-                    </button>
-                    <button id="quickDownloadToggle" type="button" title="Save as format options" style="background:#820c16;border:none;border-left:1px solid rgba(255,255,255,0.25);color:#fff;padding:0 9px;border-radius:0 8px 8px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </button>
-                    <div id="quickDownloadMenu" class="quick-download-menu" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:#161616;border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:6px;min-width:185px;z-index:1000;box-shadow:0 10px 30px rgba(0,0,0,0.7);backdrop-filter:blur(16px);">
-                        <div style="font-size:9.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;padding:6px 10px 4px;">Save As Format</div>
-                        <button class="download-format-opt" data-format="png" type="button" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:transparent;border:none;color:#eee;font-size:11.5px;font-weight:600;text-align:left;border-radius:6px;cursor:pointer;transition:background .15s;">
-                            <span style="display:flex;align-items:center;gap:6px;">📄 <span>PNG Image</span></span>
-                            <span style="font-size:9.5px;color:#888;font-weight:500;">.png</span>
-                        </button>
-                        <button class="download-format-opt" data-format="jpeg" type="button" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:transparent;border:none;color:#eee;font-size:11.5px;font-weight:600;text-align:left;border-radius:6px;cursor:pointer;transition:background .15s;">
-                            <span style="display:flex;align-items:center;gap:6px;">🖼️ <span>JPG Image</span></span>
-                            <span style="font-size:9.5px;color:#888;font-weight:500;">.jpg</span>
-                        </button>
-                        <button class="download-format-opt" data-format="webp" type="button" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:transparent;border:none;color:#eee;font-size:11.5px;font-weight:600;text-align:left;border-radius:6px;cursor:pointer;transition:background .15s;">
-                            <span style="display:flex;align-items:center;gap:6px;">🌐 <span>WebP Image</span></span>
-                            <span style="font-size:9.5px;color:#888;font-weight:500;">.webp</span>
-                        </button>
+                    <div class="vault-file-meta">
+                        <div class="vault-file-header">
+                            <span class="vault-file-name" id="vaultFileName" title="Artwork name">my-artwork.png</span>
+                            <span class="vault-status-badge" id="vaultStatusBadge">
+                                <span class="vault-status-dot"></span>
+                                <span class="vault-status-text" id="vaultStatusText">Ready to export</span>
+                            </span>
+                        </div>
+                        <div class="vault-file-subtext">
+                            <span class="vault-meta-dims" id="vaultFileDims">1920 × 1080 px</span>
+                            <span class="vault-meta-sep">•</span>
+                            <span class="vault-meta-size" id="vaultFileSize">~1.2 MB</span>
+                            <span class="vault-meta-sep">•</span>
+                            <span class="vault-meta-format" id="vaultMetaFormat" style="color:#8c94a3;">PNG Image</span>
+                            <span id="vaultUpdatedText" style="display:none;">Ready to download</span>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Format and action controls -->
+                <div class="vault-controls-section">
+                    <!-- Format pills -->
+                    <div class="vault-format-pills" role="radiogroup" aria-label="Export file format">
+                        <button class="vault-format-pill active" data-format="png" type="button" role="radio" aria-checked="true" title="Save as lossless PNG (supports transparency)">
+                            PNG
+                        </button>
+                        <button class="vault-format-pill" data-format="jpeg" type="button" role="radio" aria-checked="false" title="Save as compressed JPG">
+                            JPG
+                        </button>
+                        <button class="vault-format-pill" data-format="webp" type="button" role="radio" aria-checked="false" title="Save as modern WebP">
+                            WebP
+                        </button>
+                    </div>
+
+                    <!-- The interactive Download Vault Button -->
+                    <button class="vault-download-btn" id="vaultDownloadBtn" type="button" aria-label="Download artwork file">
+                        <!-- Rotating dashed ambient ring on hover -->
+                        <div class="vault-btn-ambient-ring" aria-hidden="true"></div>
+
+                        <!-- Icon Container (Arrow / Circular SVG Progress / Success Checkmark) -->
+                        <div class="vault-btn-icon-box" aria-hidden="true">
+                            <!-- Idle / Hover Download Arrow -->
+                            <svg class="vault-icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+
+                            <!-- Active Progress Ring SVG -->
+                            <svg class="vault-icon-progress" viewBox="0 0 24 24">
+                                <circle class="vault-progress-track" cx="12" cy="12" r="9"/>
+                                <circle class="vault-progress-circle" id="vaultProgressCircle" cx="12" cy="12" r="9"/>
+                            </svg>
+
+                            <!-- Completed Checkmark SVG with stroke animation -->
+                            <svg class="vault-icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12" class="vault-check-path"/>
+                            </svg>
+                        </div>
+
+                        <!-- Button Label -->
+                        <span class="vault-btn-label" id="vaultBtnLabel">Download Art</span>
+
+                        <!-- Semantic progress element for screen readers -->
+                        <progress class="vault-sr-progress" id="vaultAriaProgress" value="0" max="100" aria-label="Export progress" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;"></progress>
+                    </button>
+                </div>
+
+                <!-- Hidden fallback element to preserve compatibility with legacy helpers -->
+                <span id="quickDownloadBtnText" style="display:none;"></span>
             </div>
 
         </div>
@@ -2937,30 +3480,30 @@ input[type=range]{min-width:0;width:100%}
                 style="pointer-events:auto;text-align:center;">
 
                 <!-- BIG UPLOAD ARTWORK BOX (Click or Drop image to upload) -->
-                <div class="upload" id="canvasUploadBox" style="display:inline-block;max-width:480px;width:92%;cursor:pointer;padding:36px 28px;border:2px dashed var(--border2);border-radius:20px;background:rgba(16,16,16,.88);backdrop-filter:blur(16px);transition:.25s;box-shadow:0 12px 35px rgba(0,0,0,0.5);">
+                <div class="upload" id="canvasUploadBox" style="display:inline-block;max-width:min(860px,94%);width:92%;cursor:pointer;padding:46px 36px;border:2px dashed var(--border2);border-radius:22px;background:rgba(16,16,16,.88);backdrop-filter:blur(16px);transition:.25s;box-shadow:0 14px 40px rgba(0,0,0,0.55);">
 
                     <div class="upload-icon" style="margin:0 auto 14px;width:60px;height:60px;font-size:28px;border-radius:18px;display:flex;align-items:center;justify-content:center;">
                         ＋
                     </div>
 
-                    <strong style="font-size:18px;letter-spacing:-.4px;display:block;margin-bottom:6px;color:#fff;">
+                    <strong style="font-size:19px;letter-spacing:-.4px;display:block;margin-bottom:6px;color:#fff;">
                         Upload Artwork
                     </strong>
 
-                    <p style="margin-bottom:16px;color:#888;font-size:12px;line-height:1.5;">
+                    <p style="margin-bottom:18px;color:#888;font-size:13px;line-height:1.5;">
                         Drag and drop your image here, or click to browse<br>
-                        <small style="color:#666;font-size:11px;">JPG · PNG · WebP</small>
+                        <small style="color:#666;font-size:11.5px;">JPG · PNG · WebP</small>
                     </p>
 
-                    <button class="button primary" id="canvasChooseFileBtn" type="button" style="padding:10px 22px;font-weight:700;display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+                    <button class="button primary" id="canvasChooseFileBtn" type="button" style="padding:11px 24px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
                         📁 Choose File
                     </button>
 
                 </div>
 
                 <!-- SEPARATE CREATE NEW PAGE ACTION (Isolated from Upload Artwork) -->
-                <div style="margin-top:14px;">
-                    <button class="button" id="emptyNewDocBtn" type="button" style="padding:9px 18px;font-size:11.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;background:rgba(22,22,22,0.85);border:1px solid var(--border);cursor:pointer;">
+                <div style="margin-top:16px;">
+                    <button class="button" id="emptyNewDocBtn" type="button" style="padding:10px 22px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;background:rgba(22,22,22,0.85);border:1px solid var(--border);cursor:pointer;">
                         ✦ Or Create New White Page (Real Sizing)
                     </button>
                 </div>
@@ -3655,6 +4198,11 @@ function loadImage(file){
 
         emptyState.style.display =
             "none";
+
+        const fnInput = document.getElementById("fileName");
+        if(fnInput && file && file.name){
+            fnInput.value = file.name.replace(/\.[^/.]+$/, "");
+        }
 
         if(typeof showDownloadActions === "function") showDownloadActions();
 
@@ -5288,6 +5836,10 @@ function setExportFormat(fmt){
 
     const qBtnText = document.getElementById("quickDownloadBtnText");
     if(qBtnText) qBtnText.textContent = `Download Art (${ext})`;
+
+    if(typeof updateVaultCardDetails === "function"){
+        updateVaultCardDetails();
+    }
 }
 
 document
@@ -5362,17 +5914,112 @@ document
 
 
 /* =========================================================
-   EXPORT & DOWNLOAD SYSTEM
+   EXPORT & DOWNLOAD VAULT SYSTEM
 ========================================================= */
 
-function showDownloadActions(){
-    const group = document.getElementById("canvasDownloadGroup");
-    if(group){
-        group.style.display = "inline-flex";
+let isVaultDownloading = false;
+
+function calculateEstimatedSize(fmt){
+    const w = canvas.width || 1200;
+    const h = canvas.height || 800;
+    const totalPixels = w * h;
+    const qualityEl = document.getElementById("quality");
+    const q = qualityEl ? (Number(qualityEl.value) / 100) : 0.95;
+    let bytes;
+    if(fmt === "jpeg" || fmt === "jpg"){
+        bytes = totalPixels * 0.26 * q;
+    } else if(fmt === "webp"){
+        bytes = totalPixels * 0.17 * q;
+    } else {
+        // PNG (lossless compressed estimation)
+        bytes = totalPixels * 1.35;
+    }
+    if(bytes < 1024 * 1024){
+        return `~${Math.max(1, Math.round(bytes / 1024))} KB`;
+    } else {
+        return `~${(bytes / (1024 * 1024)).toFixed(1)} MB`;
     }
 }
 
-function executeDownload(formatOverride){
+function updateVaultCardDetails(){
+    const vaultCard = document.getElementById("downloadVaultCard");
+    if(!vaultCard) return;
+
+    // Artwork filename
+    let filename = document.getElementById("fileName")?.value?.trim();
+    if(!filename && originalFile && originalFile.name){
+        filename = originalFile.name.replace(/\.[^/.]+$/, "");
+    }
+    if(!filename && typeof selectedPresetName !== "undefined" && selectedPresetName){
+        filename = selectedPresetName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    }
+    if(!filename){
+        filename = "my-artwork";
+    }
+
+    const fmt = exportFormat || "png";
+    const ext = fmt === "jpeg" ? "jpg" : fmt;
+
+    const nameEl = document.getElementById("vaultFileName");
+    if(nameEl){
+        const fullName = `${filename}.${ext}`;
+        nameEl.title = fullName;
+        nameEl.textContent = fullName;
+    }
+
+    // Dimensions
+    const dimsEl = document.getElementById("vaultFileDims");
+    if(dimsEl){
+        const w = canvas.width || 0;
+        const h = canvas.height || 0;
+        dimsEl.textContent = `${w} × ${h} px`;
+    }
+
+    // Size estimation
+    const sizeEl = document.getElementById("vaultFileSize");
+    if(sizeEl){
+        sizeEl.textContent = calculateEstimatedSize(fmt);
+    }
+
+    // Format subtext label
+    const metaFmtEl = document.getElementById("vaultMetaFormat");
+    if(metaFmtEl){
+        metaFmtEl.textContent = ext.toUpperCase() + " Image";
+    }
+
+    // SVG icon format tag
+    const iconTypeEl = document.getElementById("vaultFileIconType");
+    if(iconTypeEl){
+        iconTypeEl.textContent = ext.toUpperCase();
+    }
+
+    // Format pills sync
+    document.querySelectorAll(".vault-format-pill").forEach(p => {
+        const isAct = p.dataset.format === fmt;
+        p.classList.toggle("active", isAct);
+        p.setAttribute("aria-checked", isAct ? "true" : "false");
+    });
+}
+
+function showDownloadActions(){
+    const vaultCard = document.getElementById("downloadVaultCard");
+    if(vaultCard){
+        vaultCard.style.display = "flex";
+    }
+    const info = document.getElementById("imageInfo");
+    if(info){
+        info.style.display = "none";
+    }
+    const legacyGroup = document.getElementById("canvasDownloadGroup");
+    if(legacyGroup){
+        legacyGroup.style.display = "none";
+    }
+    updateVaultCardDetails();
+}
+
+function startVaultDownload(formatOverride){
+    if(isVaultDownloading) return;
+
     if(!originalImage && (!layers || layers.length === 0) && (!canvas.width || !canvas.height)){
         alert("Please upload an image or create a page first.");
         return;
@@ -5381,6 +6028,8 @@ function executeDownload(formatOverride){
     if(typeof render === "function"){
         render();
     }
+
+    isVaultDownloading = true;
 
     const fmt = formatOverride || exportFormat || "png";
     let mime;
@@ -5413,13 +6062,110 @@ function executeDownload(formatOverride){
         exportTargetCanvas = offCanvas;
     }
 
+    // UI elements
+    const card = document.getElementById("downloadVaultCard");
+    const btn = document.getElementById("vaultDownloadBtn");
+    const label = document.getElementById("vaultBtnLabel");
+    const progressCircle = document.getElementById("vaultProgressCircle");
+    const glowLine = document.getElementById("vaultCardGlowLine");
+    const statusText = document.getElementById("vaultStatusText");
+    const sideBtn = document.getElementById("downloadBtn");
+    const ariaProg = document.getElementById("vaultAriaProgress");
+
+    // Enter Downloading State
+    if(card){
+        card.classList.add("card-downloading");
+        card.classList.remove("card-complete");
+    }
+    if(btn){
+        btn.classList.add("is-downloading");
+        btn.classList.remove("is-complete");
+        btn.setAttribute("disabled", "true");
+        btn.setAttribute("aria-busy", "true");
+    }
+    if(sideBtn){
+        sideBtn.setAttribute("disabled", "true");
+        sideBtn.textContent = "Exporting Artwork...";
+    }
+    if(statusText){
+        statusText.textContent = "Exporting artwork...";
+    }
+
+    const circleCircumference = 56.55;
+    let blobReady = false;
+    let generatedBlob = null;
+
+    // Start real blob export in background
     exportTargetCanvas.toBlob(blob => {
         if(!blob){
+            isVaultDownloading = false;
+            if(card) card.classList.remove("card-downloading");
+            if(btn){
+                btn.classList.remove("is-downloading");
+                btn.removeAttribute("disabled");
+                btn.setAttribute("aria-busy", "false");
+            }
+            if(sideBtn){
+                sideBtn.removeAttribute("disabled");
+                sideBtn.textContent = "↓ Download Artwork";
+            }
+            if(statusText) statusText.textContent = "Ready to export";
             alert("Unable to export artwork.");
             return;
         }
+        generatedBlob = blob;
+        blobReady = true;
+    }, mime, quality);
 
-        const url = URL.createObjectURL(blob);
+    // Smooth interactive progress animation loop
+    const startTime = performance.now();
+    const minDuration = 700; // ms for satisfying tactile feedback
+
+    function stepProgress(now){
+        const elapsed = now - startTime;
+        const timeFraction = Math.min(elapsed / minDuration, 1);
+
+        // Smooth cubic ease-out
+        const easeFraction = 1 - Math.pow(1 - timeFraction, 3);
+        const currentProgress = blobReady ? easeFraction : Math.min(easeFraction * 0.88, 0.88);
+        const displayPct = Math.min(100, Math.round(currentProgress * 100));
+
+        if(progressCircle){
+            const offset = circleCircumference - (currentProgress * circleCircumference);
+            progressCircle.style.strokeDashoffset = offset;
+        }
+        if(glowLine){
+            glowLine.style.width = `${displayPct}%`;
+        }
+        if(ariaProg){
+            ariaProg.value = displayPct;
+        }
+        if(label){
+            label.textContent = `Downloading (${displayPct}%)...`;
+        }
+        if(statusText){
+            statusText.textContent = `Exporting (${displayPct}%)...`;
+        }
+        if(sideBtn){
+            sideBtn.textContent = `Exporting (${displayPct}%)...`;
+        }
+
+        if(elapsed >= minDuration && blobReady){
+            // Finish at 100%
+            if(progressCircle) progressCircle.style.strokeDashoffset = 0;
+            if(glowLine) glowLine.style.width = "100%";
+            if(ariaProg) ariaProg.value = 100;
+            finishVaultDownload();
+        } else {
+            requestAnimationFrame(stepProgress);
+        }
+    }
+
+    requestAnimationFrame(stepProgress);
+
+    function finishVaultDownload(){
+        // File download execution
+        const url = URL.createObjectURL(generatedBlob);
         const a = document.createElement("a");
 
         let filename = document.getElementById("fileName")?.value?.trim();
@@ -5440,50 +6186,89 @@ function executeDownload(formatOverride){
         a.click();
         a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
-    }, mime, quality);
+
+        // Transition to Completion Success State
+        if(card){
+            card.classList.remove("card-downloading");
+            card.classList.add("card-complete");
+        }
+        if(btn){
+            btn.classList.remove("is-downloading");
+            btn.classList.add("is-complete");
+            btn.removeAttribute("disabled");
+            btn.setAttribute("aria-busy", "false");
+        }
+        if(label){
+            label.textContent = "Downloaded!";
+        }
+        if(statusText){
+            statusText.textContent = "Saved to computer!";
+        }
+        if(sideBtn){
+            sideBtn.removeAttribute("disabled");
+            sideBtn.textContent = "✓ Artwork Downloaded";
+        }
+
+        // Automatic smooth reset back to ready state after 2.5s
+        setTimeout(() => {
+            if(btn){
+                btn.classList.remove("is-complete");
+                label.textContent = "Download Art";
+            }
+            if(card){
+                card.classList.remove("card-complete");
+            }
+            if(glowLine){
+                glowLine.style.width = "0%";
+            }
+            if(progressCircle){
+                progressCircle.style.strokeDashoffset = circleCircumference;
+            }
+            if(ariaProg){
+                ariaProg.value = 0;
+            }
+            if(statusText){
+                statusText.textContent = "Ready to export";
+            }
+            if(sideBtn){
+                sideBtn.textContent = "↓ Download Artwork";
+            }
+            isVaultDownloading = false;
+        }, 2500);
+    }
 }
 
-// Quick Download toolbar button
-document.getElementById("quickDownloadBtn")?.addEventListener("click", ()=>{
-    executeDownload();
+// Backward-compatible alias
+function executeDownload(formatOverride){
+    startVaultDownload(formatOverride);
+}
+
+// Vault Download Button click
+document.getElementById("vaultDownloadBtn")?.addEventListener("click", () => {
+    startVaultDownload();
 });
 
-// Format dropdown toggle
-document.getElementById("quickDownloadToggle")?.addEventListener("click", e=>{
-    e.stopPropagation();
-    const menu = document.getElementById("quickDownloadMenu");
-    if(menu){
-        menu.style.display = menu.style.display === "block" ? "none" : "block";
-    }
-});
-
-// Format dropdown menu options
-document.querySelectorAll(".download-format-opt").forEach(optBtn=>{
-    optBtn.addEventListener("click", e=>{
-        e.stopPropagation();
-        const fmt = optBtn.dataset.format;
-        if(typeof setExportFormat === "function") setExportFormat(fmt);
-        const menu = document.getElementById("quickDownloadMenu");
-        if(menu) menu.style.display = "none";
-        executeDownload(fmt);
+// Vault Format Pills click
+document.querySelectorAll(".vault-format-pill").forEach(pill => {
+    pill.addEventListener("click", () => {
+        const fmt = pill.dataset.format;
+        setExportFormat(fmt);
     });
 });
 
-// Close dropdown on click outside
-document.addEventListener("click", e=>{
-    const menu = document.getElementById("quickDownloadMenu");
-    if(menu && menu.style.display === "block"){
-        if(!e.target.closest(".quick-download-wrapper")){
-            menu.style.display = "none";
-        }
-    }
-});
-
 // Sidebar Download Artwork button
-document.getElementById("downloadBtn")?.addEventListener("click", ()=>{
-    executeDownload();
+document.getElementById("downloadBtn")?.addEventListener("click", () => {
+    startVaultDownload();
 });
 
+// Live metadata sync on artwork name or quality changes
+document.getElementById("fileName")?.addEventListener("input", () => {
+    if(typeof updateVaultCardDetails === "function") updateVaultCardDetails();
+});
+
+document.getElementById("quality")?.addEventListener("input", () => {
+    if(typeof updateVaultCardDetails === "function") updateVaultCardDetails();
+});
 
 /* =========================================================
    INFORMATION
@@ -5518,6 +6303,9 @@ function updateInfo(){
             Export: ${exportFormat.toUpperCase()}
         `;
 
+    if(typeof updateVaultCardDetails === "function"){
+        updateVaultCardDetails();
+    }
 }
 
 
@@ -5771,6 +6559,10 @@ function createDocument({ width, height, bgColor = "#ffffff", name = "New Canvas
     interactionCanvas.height = height;
   }
   emptyState.style.display = "none";
+  const fnInput = document.getElementById("fileName");
+  if(fnInput && name){
+    fnInput.value = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  }
   if(typeof showDownloadActions === "function") showDownloadActions();
   status.classList.add("ready");
   imageInfo.textContent = `${name} · ${width} × ${height} px`;
