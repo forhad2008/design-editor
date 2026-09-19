@@ -604,6 +604,25 @@ input[type=range]{
     color:#111;
 }
 
+.canvas-download-group{
+    display:none;
+    align-items:center;
+    gap:8px;
+}
+
+.download-format-opt:hover{
+    background:rgba(255,255,255,.08) !important;
+    color:#fff !important;
+}
+
+#quickDownloadToggle:hover{
+    background:#9b0015 !important;
+}
+
+#quickDownloadBtn:hover{
+    filter:brightness(1.12);
+}
+
 .canvas-wrap{
     flex:1;
     min-height:590px;
@@ -827,12 +846,21 @@ input[type=range]{
         flex-direction:column;
     }
 
-    .format-buttons{
+    .canvas-download-group{
         width:100%;
+        justify-content:space-between;
+        flex-wrap:wrap;
+        gap:8px;
+    }
+
+    .format-buttons{
+        flex:1;
+        min-width:180px;
     }
 
     .format{
         flex:1;
+        text-align:center;
     }
 
     .canvas-wrap{
@@ -900,8 +928,9 @@ main{width:min(1640px,96%)!important;padding:28px 0 60px!important}
  background:linear-gradient(100deg,#fff 10%,#bcb4ff 48%,#72e6ff 90%);
  -webkit-background-clip:text;background-clip:text;color:transparent;
 }
-.hero p{color:#8f97a6!important}
-.editor{grid-template-columns:365px minmax(0,1fr) 330px!important;gap:14px!important}
+.editor{grid-template-columns:minmax(310px,365px) minmax(0,1fr)!important;gap:16px!important}
+.workspace,.canvas-panel{width:100%!important;min-width:0!important}
+.right-panel{grid-column:1 / -1!important;width:100%!important;position:relative!important;top:auto!important;max-height:none!important;margin-top:14px}
 .panel,.canvas-panel{
  background:linear-gradient(180deg,rgba(20,24,32,.88),rgba(11,13,18,.94))!important;
  border:1px solid rgba(255,255,255,.09)!important;box-shadow:var(--shadow);
@@ -984,8 +1013,8 @@ main,.editor,.workspace,.panel,.canvas-panel,.panel-inner{min-width:0;max-width:
 .editor{
   width:100%;
   display:grid;
-  grid-template-columns:minmax(300px,365px) minmax(0,1fr) minmax(280px,330px);
-  gap:14px;
+  grid-template-columns:minmax(310px,365px) minmax(0,1fr);
+  gap:16px;
   align-items:start;
 }
 
@@ -1392,7 +1421,7 @@ input[type=range]{min-width:0;width:100%}
 <aside class="panel left-panel">
 
     <div class="panel-title">
-        Artwork Controls
+        Artwork Controler
     </div>
 
     <div class="panel-inner">
@@ -1884,6 +1913,10 @@ input[type=range]{min-width:0;width:100%}
 
                 <select id="gradientType">
 
+                    <option value="none" selected>
+                        None (No Gradient)
+                    </option>
+
                     <option value="linear">
                         Linear
                     </option>
@@ -1957,12 +1990,12 @@ input[type=range]{min-width:0;width:100%}
                         id="gradientOpacity"
                         min="0"
                         max="100"
-                        value="70">
+                        value="0">
 
                     <span
                         class="range-value"
                         id="gradientOpacityValue">
-                        70%
+                        0%
                     </span>
 
                 </div>
@@ -2835,25 +2868,57 @@ input[type=range]{min-width:0;width:100%}
                 No image selected
             </div>
 
-            <div class="format-buttons">
+            <div class="canvas-download-group" id="canvasDownloadGroup" style="display:none; align-items:center; gap:8px;">
 
-                <button
-                    class="format active"
-                    data-format="png">
-                    PNG
-                </button>
+                <div class="format-buttons" title="Select format">
 
-                <button
-                    class="format"
-                    data-format="jpeg">
-                    JPG
-                </button>
+                    <button
+                        class="format active"
+                        data-format="png"
+                        type="button">
+                        PNG
+                    </button>
 
-                <button
-                    class="format"
-                    data-format="webp">
-                    WebP
-                </button>
+                    <button
+                        class="format"
+                        data-format="jpeg"
+                        type="button">
+                        JPG
+                    </button>
+
+                    <button
+                        class="format"
+                        data-format="webp"
+                        type="button">
+                        WebP
+                    </button>
+
+                </div>
+
+                <div class="quick-download-wrapper" style="position:relative;display:inline-flex;align-items:stretch;">
+                    <button class="button primary" id="quickDownloadBtn" type="button" title="Download artwork" style="padding:7px 15px;font-size:11.5px;font-weight:700;display:inline-flex;align-items:center;gap:6px;border-radius:8px 0 0 8px;cursor:pointer;white-space:nowrap;background:linear-gradient(135deg,var(--accent2),#9b0015);border:none;color:#fff;box-shadow:0 3px 12px rgba(193,18,31,0.35);">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span id="quickDownloadBtnText">Download Art (PNG)</span>
+                    </button>
+                    <button id="quickDownloadToggle" type="button" title="Save as format options" style="background:#820c16;border:none;border-left:1px solid rgba(255,255,255,0.25);color:#fff;padding:0 9px;border-radius:0 8px 8px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div id="quickDownloadMenu" class="quick-download-menu" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:#161616;border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:6px;min-width:185px;z-index:1000;box-shadow:0 10px 30px rgba(0,0,0,0.7);backdrop-filter:blur(16px);">
+                        <div style="font-size:9.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;padding:6px 10px 4px;">Save As Format</div>
+                        <button class="download-format-opt" data-format="png" type="button" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:transparent;border:none;color:#eee;font-size:11.5px;font-weight:600;text-align:left;border-radius:6px;cursor:pointer;transition:background .15s;">
+                            <span style="display:flex;align-items:center;gap:6px;">📄 <span>PNG Image</span></span>
+                            <span style="font-size:9.5px;color:#888;font-weight:500;">.png</span>
+                        </button>
+                        <button class="download-format-opt" data-format="jpeg" type="button" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:transparent;border:none;color:#eee;font-size:11.5px;font-weight:600;text-align:left;border-radius:6px;cursor:pointer;transition:background .15s;">
+                            <span style="display:flex;align-items:center;gap:6px;">🖼️ <span>JPG Image</span></span>
+                            <span style="font-size:9.5px;color:#888;font-weight:500;">.jpg</span>
+                        </button>
+                        <button class="download-format-opt" data-format="webp" type="button" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:transparent;border:none;color:#eee;font-size:11.5px;font-weight:600;text-align:left;border-radius:6px;cursor:pointer;transition:background .15s;">
+                            <span style="display:flex;align-items:center;gap:6px;">🌐 <span>WebP Image</span></span>
+                            <span style="font-size:9.5px;color:#888;font-weight:500;">.webp</span>
+                        </button>
+                    </div>
+                </div>
 
             </div>
 
@@ -2873,30 +2938,30 @@ input[type=range]{min-width:0;width:100%}
                 style="pointer-events:auto;text-align:center;">
 
                 <!-- BIG UPLOAD ARTWORK BOX (Click or Drop image to upload) -->
-                <div class="upload" id="canvasUploadBox" style="display:inline-block;max-width:480px;width:92%;cursor:pointer;padding:36px 28px;border:2px dashed var(--border2);border-radius:20px;background:rgba(16,16,16,.88);backdrop-filter:blur(16px);transition:.25s;box-shadow:0 12px 35px rgba(0,0,0,0.5);">
+                <div class="upload" id="canvasUploadBox" style="display:inline-block;max-width:min(860px,94%);width:92%;cursor:pointer;padding:46px 36px;border:2px dashed var(--border2);border-radius:22px;background:rgba(16,16,16,.88);backdrop-filter:blur(16px);transition:.25s;box-shadow:0 14px 40px rgba(0,0,0,0.55);">
 
                     <div class="upload-icon" style="margin:0 auto 14px;width:60px;height:60px;font-size:28px;border-radius:18px;display:flex;align-items:center;justify-content:center;">
                         ＋
                     </div>
 
-                    <strong style="font-size:18px;letter-spacing:-.4px;display:block;margin-bottom:6px;color:#fff;">
+                    <strong style="font-size:19px;letter-spacing:-.4px;display:block;margin-bottom:6px;color:#fff;">
                         Upload Artwork
                     </strong>
 
-                    <p style="margin-bottom:16px;color:#888;font-size:12px;line-height:1.5;">
+                    <p style="margin-bottom:18px;color:#888;font-size:13px;line-height:1.5;">
                         Drag and drop your image here, or click to browse<br>
-                        <small style="color:#666;font-size:11px;">JPG · PNG · WebP</small>
+                        <small style="color:#666;font-size:11.5px;">JPG · PNG · WebP</small>
                     </p>
 
-                    <button class="button primary" id="canvasChooseFileBtn" type="button" style="padding:10px 22px;font-weight:700;display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+                    <button class="button primary" id="canvasChooseFileBtn" type="button" style="padding:11px 24px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
                         📁 Choose File
                     </button>
 
                 </div>
 
                 <!-- SEPARATE CREATE NEW PAGE ACTION (Isolated from Upload Artwork) -->
-                <div style="margin-top:14px;">
-                    <button class="button" id="emptyNewDocBtn" type="button" style="padding:9px 18px;font-size:11.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;background:rgba(22,22,22,0.85);border:1px solid var(--border);cursor:pointer;">
+                <div style="margin-top:16px;">
+                    <button class="button" id="emptyNewDocBtn" type="button" style="padding:10px 22px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;background:rgba(22,22,22,0.85);border:1px solid var(--border);cursor:pointer;">
                         ✦ Or Create New White Page (Real Sizing)
                     </button>
                 </div>
@@ -3256,7 +3321,7 @@ let colors = [
     "#7b00ff"
 ];
 
-let gradientType = "linear";
+let gradientType = "none";
 
 
 /* =========================================================
@@ -3486,6 +3551,73 @@ if(canvasUploadBox){
 }
 
 
+function resetOverlaysAndTools(){
+    // 1. Ensure Gradient is never auto-applied or auto-selected
+    const gType = document.getElementById("gradientType");
+    if(gType) gType.value = "none";
+    gradientType = "none";
+    const gOp = document.getElementById("gradientOpacity");
+    if(gOp) gOp.value = 0;
+    const gOpVal = document.getElementById("gradientOpacityValue");
+    if(gOpVal) gOpVal.textContent = "0%";
+    document.querySelectorAll(".preset").forEach(b => b.classList.remove("active"));
+
+    // 2. Reset Pattern
+    patternType = "none";
+    document.querySelectorAll(".pattern-option").forEach(b => b.classList.remove("active"));
+    const pControls = document.getElementById("patternControls");
+    if(pControls) pControls.style.display = "none";
+
+    // 3. Reset Texture
+    const tex = document.getElementById("textureType");
+    if(tex) tex.value = "none";
+
+    // 4. Reset Vignette
+    const vig = document.getElementById("vignette");
+    if(vig) vig.value = 0;
+    const vigVal = document.getElementById("vignetteValue");
+    if(vigVal) vigVal.textContent = "0%";
+
+    // 5. Reset Basic Filters (brightness, contrast, saturation, blur)
+    ["brightness", "contrast", "saturation", "blur"].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = 0;
+        const valEl = document.getElementById(id + "Value");
+        if(valEl) valEl.textContent = id === "blur" ? "0px" : "0%";
+    });
+
+    // 6. Reset Pro transforms & borders
+    if(typeof proState !== "undefined"){
+        proState.borderWidth = 0;
+        proState.radius = 0;
+        proState.rotate = 0;
+        proState.scale = 100;
+        proState.x = 0;
+        proState.y = 0;
+        proState.flipH = false;
+        proState.flipV = false;
+        proState.hue = 0;
+        proState.grayscale = 0;
+        proState.sepia = 0;
+        proState.opacity = 100;
+    }
+
+    // 7. Reset uncommitted vector pen paths
+    if(typeof activePenPath !== "undefined"){
+        activePenPath = { points: [], isClosed: false };
+    }
+    if(typeof clearInteractionOverlay === "function"){
+        clearInteractionOverlay();
+    }
+
+    // 8. Clear previous text layers
+    if(typeof textLayers !== "undefined"){
+        textLayers = [];
+        if(typeof renderTextLayers === "function") renderTextLayers();
+    }
+}
+
+
 function loadImage(file){
 
     if(!/^image\/(jpeg|png|webp)$/.test(file.type)){
@@ -3507,6 +3639,8 @@ function loadImage(file){
 
     img.onload = ()=>{
 
+        resetOverlaysAndTools();
+
         originalImage = img;
 
         canvas.width =
@@ -3522,6 +3656,8 @@ function loadImage(file){
 
         emptyState.style.display =
             "none";
+
+        if(typeof showDownloadActions === "function") showDownloadActions();
 
         imageInfo.textContent =
             `${file.name} · ${img.naturalWidth} × ${img.naturalHeight}`;
@@ -3586,19 +3722,27 @@ function rgba(hex,a){
 
 function createGradient(){
 
+    const type =
+        document.getElementById("gradientType")?.value || "none";
+
+    if(type === "none"){
+        return "transparent";
+    }
+
+    const opacity =
+        Number(
+            document.getElementById("gradientOpacity")?.value || 0
+        ) / 100;
+
+    if(opacity <= 0){
+        return "transparent";
+    }
+
     const w =
         canvas.width;
 
     const h =
         canvas.height;
-
-    const type =
-        document.getElementById("gradientType").value;
-
-    const opacity =
-        Number(
-            document.getElementById("gradientOpacity").value
-        ) / 100;
 
     let gradient;
 
@@ -4310,22 +4454,26 @@ function render(){
 
 
     /* Gradient */
+    const gType = document.getElementById("gradientType")?.value || "none";
+    const gOpacity = Number(document.getElementById("gradientOpacity")?.value || 0);
 
-    ctx.globalCompositeOperation =
-        document.getElementById("gradientBlend").value;
+    if(gType !== "none" && gOpacity > 0 && colors && colors.length > 0){
+        ctx.globalCompositeOperation =
+            document.getElementById("gradientBlend").value;
 
-    ctx.fillStyle =
-        createGradient();
+        ctx.fillStyle =
+            createGradient();
 
-    ctx.fillRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+        ctx.fillRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
 
-    ctx.globalCompositeOperation =
-        "source-over";
+        ctx.globalCompositeOperation =
+            "source-over";
+    }
 
 
     /* Pattern */
@@ -4997,7 +5145,21 @@ document
 
 document
 .getElementById("gradientType")
-.addEventListener("change",render);
+.addEventListener("change", e=>{
+    gradientType = e.target.value;
+    const gOp = document.getElementById("gradientOpacity");
+    const gOpVal = document.getElementById("gradientOpacityValue");
+    if(gradientType === "none"){
+        if(gOp) gOp.value = 0;
+        if(gOpVal) gOpVal.textContent = "0%";
+    } else {
+        if(gOp && Number(gOp.value) === 0){
+            gOp.value = 50;
+            if(gOpVal) gOpVal.textContent = "50%";
+        }
+    }
+    render();
+});
 
 document
 .getElementById("gradientBlend")
@@ -5049,6 +5211,18 @@ document
         colors =
             button.dataset.colors.split(",");
 
+        const gTypeEl = document.getElementById("gradientType");
+        if(gTypeEl && (gTypeEl.value === "none" || !gTypeEl.value)){
+            gTypeEl.value = "linear";
+            gradientType = "linear";
+            const gOp = document.getElementById("gradientOpacity");
+            const gOpVal = document.getElementById("gradientOpacityValue");
+            if(gOp && Number(gOp.value) === 0){
+                gOp.value = 50;
+                if(gOpVal) gOpVal.textContent = "50%";
+            }
+        }
+
         renderColors();
         render();
 
@@ -5099,29 +5273,30 @@ adjustments.forEach(([id,valueId])=>{
    FORMAT
 ========================================================= */
 
+function setExportFormat(fmt){
+    exportFormat = fmt;
+    document.querySelectorAll(".format").forEach(item=>{
+        if(item.dataset.format === fmt){
+            item.classList.add("active");
+        } else {
+            item.classList.remove("active");
+        }
+    });
+
+    const ext = exportFormat === "jpeg" ? "JPG" : exportFormat.toUpperCase();
+    const extEl = document.getElementById("extension");
+    if(extEl) extEl.textContent = ext;
+
+    const qBtnText = document.getElementById("quickDownloadBtnText");
+    if(qBtnText) qBtnText.textContent = `Download Art (${ext})`;
+}
+
 document
 .querySelectorAll(".format")
 .forEach(button=>{
 
     button.addEventListener("click",()=>{
-
-        document
-        .querySelectorAll(".format")
-        .forEach(item=>{
-            item.classList.remove("active");
-        });
-
-        button.classList.add("active");
-
-        exportFormat =
-            button.dataset.format;
-
-        document.getElementById("extension")
-            .textContent =
-            exportFormat === "jpeg"
-                ? "JPG"
-                : exportFormat.toUpperCase();
-
+        setExportFormat(button.dataset.format);
     });
 
 });
@@ -5150,85 +5325,9 @@ document
 .getElementById("resetBtn")
 .addEventListener("click",()=>{
 
-    colors = [
-        "#ff0055",
-        "#7b00ff"
-    ];
-
-    textLayers = [];
-
-    selectedTextId = null;
-
-    patternType = "none";
-
-
-    document.getElementById("gradientType")
-        .value =
-        "linear";
-
-    document.getElementById("angle")
-        .value =
-        135;
-
-    document.getElementById("gradientOpacity")
-        .value =
-        70;
-
-    document.getElementById("gradientBlend")
-        .value =
-        "source-over";
-
-
-    document.getElementById("patternControls")
-        .style.display =
-        "none";
-
-    document.getElementById("textureControls")
-        .style.display =
-        "none";
-
-    document.getElementById("textureType")
-        .value =
-        "none";
-
-
-    [
-        ["brightness",0],
-        ["contrast",0],
-        ["saturation",0],
-        ["blur",0],
-        ["vignette",0]
-    ].forEach(([id,value])=>{
-
-        document.getElementById(id)
-            .value =
-            value;
-
-    });
-
-
-    document.getElementById("brightnessValue")
-        .textContent = "0";
-
-    document.getElementById("contrastValue")
-        .textContent = "0";
-
-    document.getElementById("saturationValue")
-        .textContent = "0";
-
-    document.getElementById("blurValue")
-        .textContent = "0";
-
-    document.getElementById("vignetteValue")
-        .textContent = "0%";
-
-
-    document.getElementById("angleValue")
-        .textContent = "135°";
-
-    document.getElementById("gradientOpacityValue")
-        .textContent = "70%";
-
+    if(typeof resetOverlaysAndTools === "function"){
+        resetOverlaysAndTools();
+    }
 
     renderColors();
     renderTextLayers();
@@ -5264,127 +5363,126 @@ document
 
 
 /* =========================================================
-   EXPORT
+   EXPORT & DOWNLOAD SYSTEM
 ========================================================= */
 
-document
-.getElementById("downloadBtn")
-.addEventListener("click",()=>{
+function showDownloadActions(){
+    const group = document.getElementById("canvasDownloadGroup");
+    if(group){
+        group.style.display = "inline-flex";
+    }
+}
 
-    if(!originalImage){
-
-        alert(
-            "Please upload an image first."
-        );
-
+function executeDownload(formatOverride){
+    if(!originalImage && (!layers || layers.length === 0) && (!canvas.width || !canvas.height)){
+        alert("Please upload an image or create a page first.");
         return;
     }
 
-    render();
+    if(typeof render === "function"){
+        render();
+    }
 
-
+    const fmt = formatOverride || exportFormat || "png";
     let mime;
-
     let extension;
 
-
-    if(exportFormat === "jpeg"){
-
-        mime =
-            "image/jpeg";
-
-        extension =
-            "jpg";
-
+    if(fmt === "jpeg" || fmt === "jpg"){
+        mime = "image/jpeg";
+        extension = "jpg";
+    } else if(fmt === "webp"){
+        mime = "image/webp";
+        extension = "webp";
+    } else {
+        mime = "image/png";
+        extension = "png";
     }
 
-    else if(exportFormat === "webp"){
+    const qualityEl = document.getElementById("quality");
+    const quality = qualityEl ? (Number(qualityEl.value) / 100) : 0.95;
 
-        mime =
-            "image/webp";
-
-        extension =
-            "webp";
-
+    let exportTargetCanvas = canvas;
+    // For JPEG export, composite onto a white backdrop so transparent canvases don't become pitch black
+    if(mime === "image/jpeg"){
+        const offCanvas = document.createElement("canvas");
+        offCanvas.width = canvas.width;
+        offCanvas.height = canvas.height;
+        const offCtx = offCanvas.getContext("2d");
+        offCtx.fillStyle = "#ffffff";
+        offCtx.fillRect(0, 0, canvas.width, canvas.height);
+        offCtx.drawImage(canvas, 0, 0);
+        exportTargetCanvas = offCanvas;
     }
 
-    else{
+    exportTargetCanvas.toBlob(blob => {
+        if(!blob){
+            alert("Unable to export artwork.");
+            return;
+        }
 
-        mime =
-            "image/png";
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
 
-        extension =
-            "png";
+        let filename = document.getElementById("fileName")?.value?.trim();
+        if(!filename && originalFile && originalFile.name){
+            filename = originalFile.name.replace(/\.[^/.]+$/, "");
+        }
+        if(!filename && typeof selectedPresetName !== "undefined" && selectedPresetName){
+            filename = selectedPresetName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        }
+        if(!filename){
+            filename = "my-artwork";
+        }
+        filename = filename.replace(/[<>:"/\\|?*]+/g, "-");
 
+        a.href = url;
+        a.download = `${filename}.${extension}`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, mime, quality);
+}
+
+// Quick Download toolbar button
+document.getElementById("quickDownloadBtn")?.addEventListener("click", ()=>{
+    executeDownload();
+});
+
+// Format dropdown toggle
+document.getElementById("quickDownloadToggle")?.addEventListener("click", e=>{
+    e.stopPropagation();
+    const menu = document.getElementById("quickDownloadMenu");
+    if(menu){
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
     }
+});
 
+// Format dropdown menu options
+document.querySelectorAll(".download-format-opt").forEach(optBtn=>{
+    optBtn.addEventListener("click", e=>{
+        e.stopPropagation();
+        const fmt = optBtn.dataset.format;
+        if(typeof setExportFormat === "function") setExportFormat(fmt);
+        const menu = document.getElementById("quickDownloadMenu");
+        if(menu) menu.style.display = "none";
+        executeDownload(fmt);
+    });
+});
 
-    const quality =
-        Number(
-            document.getElementById("quality").value
-        ) / 100;
+// Close dropdown on click outside
+document.addEventListener("click", e=>{
+    const menu = document.getElementById("quickDownloadMenu");
+    if(menu && menu.style.display === "block"){
+        if(!e.target.closest(".quick-download-wrapper")){
+            menu.style.display = "none";
+        }
+    }
+});
 
-
-    canvas.toBlob(
-        blob=>{
-
-            if(!blob){
-
-                alert(
-                    "Unable to export artwork."
-                );
-
-                return;
-            }
-
-
-            const url =
-                URL.createObjectURL(blob);
-
-            const a =
-                document.createElement("a");
-
-
-            let filename =
-                document.getElementById("fileName")
-                    .value
-                    .trim();
-
-
-            if(!filename){
-
-                filename =
-                    "my-artwork";
-
-            }
-
-
-            filename =
-                filename
-                .replace(/[<>:"/\\|?*]+/g,"-");
-
-
-            a.href =
-                url;
-
-            a.download =
-                `${filename}.${extension}`;
-
-
-            document.body.appendChild(a);
-
-            a.click();
-
-            a.remove();
-
-            URL.revokeObjectURL(url);
-
-
-        },
-        mime,
-        quality
-    );
-
+// Sidebar Download Artwork button
+document.getElementById("downloadBtn")?.addEventListener("click", ()=>{
+    executeDownload();
 });
 
 
@@ -5666,6 +5764,7 @@ document.getElementById("confirmNewDocBtn")?.addEventListener("click", ()=>{
 });
 
 function createDocument({ width, height, bgColor = "#ffffff", name = "New Canvas" }){
+  if(typeof resetOverlaysAndTools === "function") resetOverlaysAndTools();
   canvas.width = width;
   canvas.height = height;
   if(interactionCanvas){
@@ -5673,6 +5772,7 @@ function createDocument({ width, height, bgColor = "#ffffff", name = "New Canvas
     interactionCanvas.height = height;
   }
   emptyState.style.display = "none";
+  if(typeof showDownloadActions === "function") showDownloadActions();
   status.classList.add("ready");
   imageInfo.textContent = `${name} · ${width} × ${height} px`;
   sizeInfo.textContent = `${width} × ${height}`;
@@ -7008,8 +7108,10 @@ render = function(){
     ctx.restore();
   }
 
-  // Global overlay elements
-  if(document.getElementById("gradientType") && document.getElementById("gradientType").value !== "none" && colors.length > 0){
+  // Global overlay elements (only if explicitly enabled and opacity > 0)
+  const gType = document.getElementById("gradientType")?.value || "none";
+  const gOpacity = Number(document.getElementById("gradientOpacity")?.value || 0);
+  if(gType !== "none" && gOpacity > 0 && colors && colors.length > 0){
     ctx.save();
     ctx.globalCompositeOperation = document.getElementById("gradientBlend")?.value || "source-over";
     ctx.fillStyle = createGradient();
