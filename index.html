@@ -1100,14 +1100,33 @@ input[type=range]{
         -12px 0;
 }
 
-#canvas{
-    max-width:100%;
-    max-height:680px;
-    width:auto;
-    height:auto;
-    display:block;
+.canvas-stage{
+    position:relative;
+    line-height:0;
+    flex-shrink:0;
+    margin:auto;
     box-shadow:0 30px 80px rgba(0,0,0,.55);
+    border-radius:4px;
 }
+
+#canvas{
+    width:100%;
+    height:100%;
+    display:block;
+    border-radius:4px;
+}
+
+#interactionCanvas{
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    pointer-events:auto;
+    cursor:crosshair;
+    border-radius:4px;
+}
+
 
 .empty{
     position:absolute;
@@ -1374,9 +1393,6 @@ input[type=range]{
         min-height:360px;
     }
 
-    #canvas{
-        max-height:500px;
-    }
 
     .status{
         flex-direction:column;
@@ -1466,7 +1482,7 @@ select:focus,input[type=text]:focus,input[type=number]:focus{border-color:rgba(1
  min-height:620px!important;border:1px solid rgba(255,255,255,.06);
  background-color:#0c0f15!important;
 }
-#canvas{box-shadow:0 35px 100px rgba(0,0,0,.62);transition:transform .18s ease}
+.canvas-stage{box-shadow:0 35px 100px rgba(0,0,0,.62)}
 .studio-toolbar{
  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
  margin:0 auto 16px;padding:10px;border:1px solid rgba(255,255,255,.08);
@@ -3469,7 +3485,7 @@ input[type=range]{min-width:0;width:100%}
 
         <div class="canvas-wrap">
 
-            <div class="canvas-stage" id="canvasStage" style="position:relative;display:inline-block;line-height:0;">
+            <div class="canvas-stage" id="canvasStage" style="position:relative;display:none;line-height:0;flex-shrink:0;margin:auto;">
                 <canvas id="canvas"></canvas>
                 <canvas id="interactionCanvas" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:auto;cursor:crosshair;"></canvas>
             </div>
@@ -3852,6 +3868,8 @@ let originalImage = null;
 let originalFile = null;
 
 let exportFormat = "png";
+let studioZoom = 1;
+let isAutoFitMode = true;
 
 
 /* =========================================================
@@ -4199,6 +4217,9 @@ function loadImage(file){
         emptyState.style.display =
             "none";
 
+        const stage = document.getElementById("canvasStage");
+        if(stage) stage.style.display = "inline-block";
+
         const fnInput = document.getElementById("fileName");
         if(fnInput && file && file.name){
             fnInput.value = file.name.replace(/\.[^/.]+$/, "");
@@ -4225,6 +4246,15 @@ function loadImage(file){
         if(typeof renderLayersUI === "function") renderLayersUI();
 
         render();
+
+        isAutoFitMode = true;
+        if(typeof fitCanvasToWorkspace === "function"){
+            fitCanvasToWorkspace();
+            requestAnimationFrame(()=>{
+                fitCanvasToWorkspace();
+                setTimeout(fitCanvasToWorkspace, 60);
+            });
+        }
 
         URL.revokeObjectURL(url);
 
@@ -6357,7 +6387,7 @@ let proState = {
   opacity:100, hue:0, grayscale:0, sepia:0, rotate:0, scale:100, x:0, y:0,
   flipH:false, flipV:false, radius:0, borderWidth:0, borderColor:"#ffffff"
 };
-let studioZoom=1, compareMode=false, liveRender=true;
+let compareMode=false, liveRender=true;
 let history=[], future=[], historyLock=false;
 
 /* ---------------------------------------------------------
@@ -6559,6 +6589,8 @@ function createDocument({ width, height, bgColor = "#ffffff", name = "New Canvas
     interactionCanvas.height = height;
   }
   emptyState.style.display = "none";
+  const stage = document.getElementById("canvasStage");
+  if(stage) stage.style.display = "inline-block";
   const fnInput = document.getElementById("fileName");
   if(fnInput && name){
     fnInput.value = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -6595,15 +6627,14 @@ function createDocument({ width, height, bgColor = "#ffffff", name = "New Canvas
 
   closeNewDocModal();
 
-  setTimeout(()=>{
-    const wrap = document.querySelector(".canvas-wrap");
-    if(wrap){
-      const wrapW = wrap.clientWidth - 40;
-      const wrapH = wrap.clientHeight - 40;
-      studioZoom = Math.min(1, Math.min(wrapW / width, wrapH / height));
-      updateZoom();
-    }
-  }, 40);
+  isAutoFitMode = true;
+  if(typeof fitCanvasToWorkspace === "function"){
+    fitCanvasToWorkspace();
+    requestAnimationFrame(()=>{
+      fitCanvasToWorkspace();
+      setTimeout(fitCanvasToWorkspace, 60);
+    });
+  }
 
   renderLayersUI();
   render();
@@ -7942,35 +7973,105 @@ render = function(){
 };
 
 /* ---------------------------------------------------------
-   ZOOM & HISTORY ENGINE
+   ZOOM & RESPONSIVE FIT ENGINE
 --------------------------------------------------------- */
 function updateZoom(){
-  document.getElementById("zoomReadout").textContent = Math.round(studioZoom * 100) + "%";
-  const stage = document.getElementById("canvasStage") || canvas;
-  stage.style.transform = `scale(${studioZoom})`;
-  stage.style.transformOrigin = "center center";
+  const readout = document.getElementById("zoomReadout");
+  if(readout){
+    readout.textContent = Math.round(studioZoom * 100) + "%";
+  }
+
+  const stage = document.getElementById("canvasStage");
+  if(stage && canvas && canvas.width && canvas.height){
+    stage.style.display = "inline-block";
+    const displayW = Math.max(1, Math.round(canvas.width * studioZoom));
+    const displayH = Math.max(1, Math.round(canvas.height * studioZoom));
+    stage.style.width = displayW + "px";
+    stage.style.height = displayH + "px";
+    stage.style.transform = "none";
+  }
 }
 
-document.getElementById("zoomIn")?.addEventListener("click", ()=>{ studioZoom = Math.min(3, studioZoom + 0.1); updateZoom(); });
-document.getElementById("zoomOut")?.addEventListener("click", ()=>{ studioZoom = Math.max(0.15, studioZoom - 0.1); updateZoom(); });
-document.getElementById("actualBtn")?.addEventListener("click", ()=>{ studioZoom = 1; updateZoom(); });
-document.getElementById("fitBtn")?.addEventListener("click", ()=>{
+function fitCanvasToWorkspace(){
   const wrap = document.querySelector(".canvas-wrap");
-  if(wrap && canvas.width && canvas.height){
-    const wrapW = wrap.clientWidth - 40;
-    const wrapH = wrap.clientHeight - 40;
-    studioZoom = Math.min(1, Math.min(wrapW / canvas.width, wrapH / canvas.height));
-    updateZoom();
-    wrap.scrollTo({ top: 0, left: 0 });
-  } else {
-    studioZoom = 1;
-    updateZoom();
+  if(!wrap || !canvas || !canvas.width || !canvas.height) return;
+
+  if(wrap.clientWidth < 10 || wrap.clientHeight < 10){
+    requestAnimationFrame(fitCanvasToWorkspace);
+    return;
   }
+
+  const isMobile = window.innerWidth <= 850;
+  const padX = isMobile ? 24 : 48;
+  const padY = isMobile ? 24 : 48;
+
+  const availW = Math.max(60, wrap.clientWidth - padX);
+  const availH = Math.max(60, wrap.clientHeight - padY);
+
+  const docW = canvas.width;
+  const docH = canvas.height;
+
+  // Fit scale factor ensuring 100% of width and 100% of height fits inside .canvas-wrap
+  const scale = Math.min(availW / docW, availH / docH);
+
+  studioZoom = Math.max(0.02, Math.min(5, scale));
+  updateZoom();
+
+  if(typeof wrap.scrollTo === "function"){
+    wrap.scrollTo({ top: 0, left: 0 });
+  }
+}
+
+document.getElementById("zoomIn")?.addEventListener("click", ()=>{
+  isAutoFitMode = false;
+  studioZoom = Math.min(5, Number((studioZoom + 0.1).toFixed(2)));
+  updateZoom();
 });
+
+document.getElementById("zoomOut")?.addEventListener("click", ()=>{
+  isAutoFitMode = false;
+  studioZoom = Math.max(0.05, Number((studioZoom - 0.1).toFixed(2)));
+  updateZoom();
+});
+
+document.getElementById("actualBtn")?.addEventListener("click", ()=>{
+  isAutoFitMode = false;
+  studioZoom = 1;
+  updateZoom();
+});
+
+document.getElementById("fitBtn")?.addEventListener("click", ()=>{
+  isAutoFitMode = true;
+  fitCanvasToWorkspace();
+});
+
 document.getElementById("fullscreenBtn")?.addEventListener("click", ()=>{
   const el = document.querySelector(".canvas-panel");
   if(!document.fullscreenElement) el?.requestFullscreen?.();
   else document.exitFullscreen?.();
+});
+
+// Subtle Ctrl/Cmd + Wheel zooming inside canvas viewport
+document.querySelector(".canvas-wrap")?.addEventListener("wheel", e => {
+  if(e.ctrlKey || e.metaKey){
+    e.preventDefault();
+    isAutoFitMode = false;
+    const delta = e.deltaY < 0 ? 0.05 : -0.05;
+    studioZoom = Math.max(0.05, Math.min(5, Number((studioZoom + delta).toFixed(2))));
+    updateZoom();
+  }
+}, { passive: false });
+
+// Responsive window resize observer
+let fitResizeTimer = null;
+window.addEventListener("resize", ()=>{
+  if(!isAutoFitMode) return;
+  clearTimeout(fitResizeTimer);
+  fitResizeTimer = setTimeout(()=>{
+    if(canvas && canvas.width && canvas.height && emptyState && emptyState.style.display === "none"){
+      fitCanvasToWorkspace();
+    }
+  }, 100);
 });
 
 function snapshot(){
@@ -8026,6 +8127,9 @@ function restoreSnapshot(str){
     if(interactionCanvas){
       interactionCanvas.width = canvas.width;
       interactionCanvas.height = canvas.height;
+    }
+    if(typeof fitCanvasToWorkspace === "function"){
+      fitCanvasToWorkspace();
     }
   }
 
